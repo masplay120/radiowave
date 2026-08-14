@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RadioWave · Tu Radio en la Nube</title>
+  <meta name="description" content="Portal moderno de radio streaming con sincronización en la nube." />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: { 50:'#f0f4ff', 100:'#e0e8ff', 400:'#7c83ff', 500:'#6366f1', 600:'#4f46e5', 700:'#4338ca', 800:'#3730a3' },
+            surface: { 50:'#f8fafc', 900:'#0f1115', 950:'#07090c' }
+          },
+          fontFamily: { sans: ['Inter','system-ui','sans-serif'] }
+        }
+      }
+    }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <style>
+    html.dark { color-scheme: dark; }
+    :root { color-scheme: dark; }
+    html, body { font-family: 'Inter', sans-serif; }
+    body {
+      background: radial-gradient(1200px 600px at 10% -10%, rgba(99,102,241,.18), transparent 60%),
+                  radial-gradient(900px 500px at 110% 10%, rgba(168,85,247,.15), transparent 60%),
+                  #07090c;
+      min-height: 100vh;
+    }
+
+    /* ===== MODO EMBED: oculta todo el portal, deja solo el mini-player ===== */
+    .embed-mode header, .embed-mode main#app, .embed-mode #audioPlayer, .embed-mode #toast { display: none !important; }
+    .embed-mode { padding-bottom: 0 !important; background: #07090c !important; }
+
+    select.input {
+      background-color: #0f1115; color: #e2e8f0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 16px;
+      padding-right: 2.5rem; -webkit-appearance: none; -moz-appearance: none; appearance: none;
+    }
+    select.input option { background-color: #0f1115 !important; color: #e2e8f0 !important; padding: 8px 12px; }
+    select.input option:checked { background-color: #6366f1 !important; color: #ffffff !important; font-weight: 600; }
+
+    .genre-chip {
+      padding: .4rem .85rem; border-radius: 9999px;
+      background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08);
+      color: #cbd5e1; font-size: .8rem; font-weight: 500; cursor: pointer;
+      transition: all .15s; user-select: none; display: inline-flex; align-items: center; gap: .35rem;
+    }
+    .genre-chip:hover { background: rgba(99,102,241,.12); border-color: rgba(99,102,241,.35); }
+    .genre-chip.selected {
+      background: linear-gradient(135deg, #6366f1, #a855f7);
+      border-color: transparent; color: #ffffff;
+      box-shadow: 0 4px 12px -2px rgba(99,102,241,.45);
+    }
+    .genre-chip.selected::before { content: "✓"; font-size: .75rem; font-weight: bold; }
+
+    @keyframes live-pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .4; transform: scale(.85); } }
+    .live-dot { width: 8px; height: 8px; border-radius: 9999px; background: #ef4444; box-shadow: 0 0 10px #ef4444; animation: live-pulse 1.2s ease-in-out infinite; }
+
+    input[type="range"].range-vol { -webkit-appearance: none; height: 4px; border-radius: 9999px; background: #374151; }
+    input[type="range"].range-vol::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; border-radius: 9999px; background: #6366f1; cursor: pointer; border: 2px solid #fff; }
+
+    @keyframes song-fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+    .song-update { animation: song-fade .4s ease-out; }
+
+    @keyframes heart-pop { 0% { transform: scale(1); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
+    .heart-pop { animation: heart-pop .35s ease-out; }
+
+    .modal-fade { animation: fade .2s ease-out; }
+    @keyframes fade { from { opacity: 0; transform: translateY(8px);} to {opacity:1; transform: none;} }
+
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #374151; }
+
+    .input {
+      width: 100%; padding: .65rem .9rem;
+      background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08);
+      border-radius: .75rem; color: #e2e8f0; outline: none; transition: .15s; font-size: .9rem;
+    }
+    .input:focus { border-color: #6366f1; background: rgba(99,102,241,.08); }
+    label { display: block; font-size: .75rem; color: #94a3b8; margin-bottom: .25rem; }
+    .btn-primary {
+      background: linear-gradient(135deg, #6366f1, #a855f7); color: white; font-weight: 600;
+      padding: .7rem 1rem; border-radius: .75rem; transition: .15s;
+      box-shadow: 0 8px 24px -8px rgba(99,102,241,.5);
+    }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 12px 28px -8px rgba(99,102,241,.7); }
+    .btn-primary:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+    .btn-secondary {
+      background: rgba(255,255,255,.05); color: #e2e8f0; padding: .7rem 1rem;
+      border-radius: .75rem; border: 1px solid rgba(255,255,255,.08); transition: .15s;
+    }
+    .btn-secondary:hover { background: rgba(255,255,255,.08); }
+    .nav-btn.active { background: #6366f1; color: white; }
+    .nav-btn:not(.active) { color: #cbd5e1; }
+    .nav-btn:not(.active):hover { background: rgba(255,255,255,.05); }
+
+    .genre-btn {
+      padding: .5rem 1rem; border-radius: 9999px; font-size: .85rem; font-weight: 500;
+      background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.08);
+      color: #cbd5e1; cursor: pointer; transition: .15s;
+    }
+    .genre-btn:hover { background: rgba(255,255,255,.1); }
+    .genre-btn.selected { background: linear-gradient(135deg, #6366f1, #a855f7); border-color: transparent; color: #ffffff; }
+
+    .logo-preview {
+      width: 120px; height: 120px; border-radius: 12px;
+      background: rgba(255,255,255,.04); border: 2px dashed rgba(255,255,255,.1);
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden; position: relative; flex-shrink: 0;
+    }
+    .logo-preview img { width: 100%; height: 100%; object-fit: cover; }
+    .logo-preview.empty { color: #64748b; font-size: .75rem; text-align: center; padding: 1rem; }
+    .logo-upload-btn {
+      padding: .5rem 1rem; background: rgba(99,102,241,.15); border: 1px solid rgba(99,102,241,.3);
+      border-radius: 8px; color: #818cf8; font-size: .85rem; cursor: pointer; transition: .15s;
+    }
+    .logo-upload-btn:hover { background: rgba(99,102,241,.25); }
+
+    .social-ico {
+      width: 26px; height: 26px; border-radius: 9999px;
+      background: rgba(255,255,255,.06); display: grid; place-items: center;
+      transition: .15s;
+    }
+    .social-ico:hover { background: rgba(99,102,241,.4); transform: translateY(-1px); }
+  </style>
+</head>
+
+<body class="text-slate-200 pb-28">
+
+  <header class="sticky top-0 z-40 backdrop-blur-xl bg-surface-950/70 border-b border-white/5">
+    <div class="max-w-7xl mx-auto px-4 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-purple-600 grid place-items-center shadow-lg shadow-brand-500/30">
+          <i data-lucide="radio" class="w-5 h-5 text-white"></i>
+        </div>
+        <span class="font-bold text-lg tracking-tight">Radio<span class="text-brand-400">Wave</span></span>
+      </div>
+
+      <nav class="hidden md:flex items-center gap-1 bg-white/5 rounded-full p-1 border border-white/5">
+        <button data-nav="home"      class="nav-btn px-4 py-1.5 rounded-full text-sm font-medium">Inicio</button>
+        <button data-nav="explore"   class="nav-btn px-4 py-1.5 rounded-full text-sm font-medium">Explorar</button>
+        <button data-nav="favorites" class="nav-btn px-4 py-1.5 rounded-full text-sm font-medium auth-only hidden">Mis Favoritos</button>
+        <button data-nav="dashboard" class="nav-btn px-4 py-1.5 rounded-full text-sm font-medium auth-only hidden">Mi Panel</button>
+      </nav>
+
+      <div class="flex items-center gap-2">
+        <div id="authArea" class="flex items-center gap-2"></div>
+      </div>
+    </div>
+
+    <nav class="md:hidden flex items-center gap-1 overflow-x-auto px-4 pb-2">
+      <button data-nav="home"      class="nav-btn shrink-0 px-3 py-1.5 rounded-full text-xs font-medium bg-white/5">Inicio</button>
+      <button data-nav="explore"   class="nav-btn shrink-0 px-3 py-1.5 rounded-full text-xs font-medium bg-white/5">Explorar</button>
+      <button data-nav="favorites" class="nav-btn shrink-0 px-3 py-1.5 rounded-full text-xs font-medium bg-white/5 auth-only hidden">Favoritos</button>
+      <button data-nav="dashboard" class="nav-btn shrink-0 px-3 py-1.5 rounded-full text-xs font-medium bg-white/5 auth-only hidden">Panel</button>
+    </nav>
+  </header>
+
+  <main id="app" class="max-w-7xl mx-auto px-4 lg:px-8 py-8"></main>
+
+  <!-- ========================================================= -->
+  <!-- REPRODUCTOR PRINCIPAL (footer del portal)                 -->
+  <!-- ========================================================= -->
+  <footer id="audioPlayer" class="fixed bottom-0 inset-x-0 z-50 hidden">
+    <div class="max-w-7xl mx-auto px-3 lg:px-8">
+      <div class="bg-gradient-to-r from-surface-900 via-surface-900 to-surface-950 border border-white/10 rounded-t-2xl shadow-2xl shadow-black/50 px-4 py-3 flex items-center gap-3">
+        <div class="shrink-0 w-14 h-14 rounded-xl bg-white/5 grid place-items-center overflow-hidden ring-1 ring-white/10">
+          <img id="pLogo" src="" alt="" class="w-full h-full object-cover hidden" />
+          <i data-lucide="radio" class="w-6 h-6 text-white/60" id="pIcon"></i>
+        </div>
+        <div class="min-w-0 flex-1">
+          <div class="flex items-center gap-2">
+            <h4 id="pName" class="font-semibold truncate text-sm">Sin reproducir</h4>
+            <span id="pLive" class="hidden items-center gap-1 text-[10px] font-bold text-red-400 bg-red-500/10 px-1.5 py-0.5 rounded-full">
+              <span class="live-dot"></span> EN VIVO
+            </span>
+          </div>
+          <p id="pSong" class="text-xs text-slate-300 truncate song-update">Transmisión en vivo</p>
+          <p id="pGenre" class="text-xs text-slate-500 truncate">—</p>
+        </div>
+        <div id="pStatus" class="hidden sm:block text-xs text-slate-400 min-w-[90px]"></div>
+        <div class="flex items-center gap-2">
+          <button id="btnPlayerFav" class="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 grid place-items-center transition" title="Favoritos">
+            <i id="btnPlayerFavIcon" data-lucide="heart" class="w-5 h-5 text-slate-300"></i>
+          </button>
+          <button id="btnShare" class="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 grid place-items-center transition" title="Compartir">
+            <i data-lucide="share-2" class="w-5 h-5"></i>
+          </button>
+          <button id="btnPlay" class="w-11 h-11 rounded-full bg-brand-500 hover:bg-brand-600 grid place-items-center shadow-lg shadow-brand-500/30 transition">
+            <i id="btnPlayIcon" data-lucide="play" class="w-5 h-5 text-white"></i>
+          </button>
+          <button id="btnMute" class="w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 grid place-items-center transition">
+            <i id="btnMuteIcon" data-lucide="volume-2" class="w-4 h-4"></i>
+          </button>
+          <input id="volSlider" type="range" min="0" max="1" step="0.01" value="0.8" class="range-vol w-20 hidden sm:block" />
+          <button id="btnClose" class="w-9 h-9 rounded-full bg-white/5 hover:bg-red-500/20 hover:text-red-400 grid place-items-center transition">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ========================================================= -->
+  <!-- REPRODUCTOR EMBED COMPACTO (120px) — sin corazón, sin X   -->
+  <!-- ========================================================= -->
+  <div id="embedPlayer" class="hidden fixed inset-0 z-50">
+    <div class="h-full w-full flex items-center gap-3 px-3 bg-gradient-to-r from-surface-900 via-surface-950 to-surface-900 border border-white/10">
+      <!-- Logo -->
+      <div class="shrink-0 w-[76px] h-[76px] rounded-xl bg-white/5 grid place-items-center overflow-hidden ring-1 ring-white/10">
+        <img id="eLogo" src="" alt="" class="w-full h-full object-cover hidden" />
+        <i data-lucide="radio" class="w-8 h-8 text-white/50" id="eIcon"></i>
+      </div>
+
+      <!-- Info + marca de agua -->
+      <div class="min-w-0 flex-1">
+        <a id="eName" href="#" target="_blank" rel="noopener" class="block font-semibold text-sm truncate hover:text-brand-400 transition">—</a>
+        <p id="eSong" class="text-xs text-slate-300 truncate song-update">Transmisión en vivo</p>
+        <a id="eBrand" href="#" target="_blank" rel="noopener" class="inline-flex items-center gap-1 text-[10px] text-slate-500 hover:text-brand-400 transition mt-0.5">
+          <span class="live-dot" style="width:5px;height:5px;"></span> Sonando en RadioWave
+        </a>
+      </div>
+
+      <!-- Controles (solo play, mute y volumen) -->
+      <div class="flex items-center gap-2 shrink-0">
+        <button id="ePlay" class="w-11 h-11 rounded-full bg-brand-500 hover:bg-brand-600 grid place-items-center shadow-lg shadow-brand-500/30 transition">
+          <i id="ePlayIcon" data-lucide="play" class="w-5 h-5 text-white"></i>
+        </button>
+        <button id="eMute" class="w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 grid place-items-center transition">
+          <i id="eMuteIcon" data-lucide="volume-2" class="w-4 h-4"></i>
+        </button>
+        <input id="eVol" type="range" min="0" max="1" step="0.01" value="0.8" class="range-vol w-16 hidden sm:block" />
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL AUTH -->
+  <div id="authModal" class="hidden fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm grid place-items-center p-4">
+    <div class="modal-fade bg-surface-900 border border-white/10 rounded-2xl w-full max-w-md p-6 relative">
+      <button onclick="window.closeAuth()" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 grid place-items-center">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+      <div class="flex gap-1 p-1 bg-white/5 rounded-xl mb-6">
+        <button data-auth-tab="login"    class="auth-tab flex-1 py-2 rounded-lg text-sm font-medium">Iniciar</button>
+        <button data-auth-tab="register" class="auth-tab flex-1 py-2 rounded-lg text-sm font-medium">Registrar</button>
+        <button data-auth-tab="recover"  class="auth-tab flex-1 py-2 rounded-lg text-sm font-medium">Recuperar</button>
+      </div>
+      <form id="formLogin" class="auth-form space-y-3">
+        <h3 class="text-xl font-bold">Bienvenido de vuelta</h3>
+        <p class="text-sm text-slate-400">Accede para sincronizar tus favoritos.</p>
+        <input type="email" name="email" required placeholder="Correo" class="input">
+        <input type="password" name="password" required placeholder="Contraseña" class="input">
+        <button class="btn-primary w-full">Iniciar sesión</button>
+      </form>
+      <form id="formRegister" class="auth-form space-y-3 hidden">
+        <h3 class="text-xl font-bold">Crear cuenta</h3>
+        <p class="text-sm text-slate-400">Registra tu frase secreta para recuperar tu clave.</p>
+        <input type="text" name="name" required placeholder="Nombre" class="input">
+        <input type="email" name="email" required placeholder="Correo" class="input">
+        <input type="password" name="password" required minlength="6" placeholder="Contraseña (mín. 6)" class="input">
+        <select name="role" class="input">
+          <option value="listener">🎧 Soy Oyente</option>
+          <option value="broadcaster">🎙️ Soy Emisora / Creador</option>
+        </select>
+        <input type="text" name="secretQuestion" required placeholder="Pregunta de seguridad" class="input">
+        <input type="password" name="secretAnswer" required placeholder="Respuesta secreta" class="input">
+        <button class="btn-primary w-full">Crear cuenta</button>
+      </form>
+      <form id="formRecover" class="auth-form space-y-3 hidden">
+        <h3 class="text-xl font-bold">Restablecer contraseña</h3>
+        <p class="text-sm text-slate-400">Validaremos tu frase secreta registrada.</p>
+        <input type="email" name="email" required placeholder="Correo" class="input" id="recEmail">
+        <input type="password" name="secretAnswer" required placeholder="Tu respuesta secreta" class="input" id="recSecret">
+        <input type="password" name="newPassword" required minlength="6" placeholder="Nueva contraseña" class="input" id="recNewPass">
+        <button class="btn-primary w-full">Cambiar contraseña</button>
+      </form>
+      <div id="authError" class="hidden mt-3 p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-300 text-sm"></div>
+      <div id="authSuccess" class="hidden mt-3 p-3 rounded-lg bg-green-500/10 border border-green-500/30 text-green-300 text-sm"></div>
+    </div>
+  </div>
+
+  <!-- MODAL COMPARTIR -->
+  <div id="shareModal" class="hidden fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm grid place-items-center p-4">
+    <div class="modal-fade bg-surface-900 border border-white/10 rounded-2xl w-full max-w-lg p-6">
+      <div class="flex items-start justify-between mb-4">
+        <div>
+          <h3 class="text-xl font-bold">Compartir emisora</h3>
+          <p id="shareName" class="text-sm text-slate-400"></p>
+        </div>
+        <button onclick="window.closeShare()" class="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 grid place-items-center">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <div class="grid grid-cols-5 gap-3 mb-6">
+        <button data-share="whatsapp" class="share-btn aspect-square rounded-xl bg-white/5 hover:bg-green-500/20 grid place-items-center"><i data-lucide="message-circle" class="w-5 h-5 text-green-400"></i></button>
+        <button data-share="telegram" class="share-btn aspect-square rounded-xl bg-white/5 hover:bg-sky-500/20 grid place-items-center"><i data-lucide="send" class="w-5 h-5 text-sky-400"></i></button>
+        <button data-share="facebook" class="share-btn aspect-square rounded-xl bg-white/5 hover:bg-blue-500/20 grid place-items-center"><i data-lucide="facebook" class="w-5 h-5 text-blue-400"></i></button>
+        <button data-share="twitter"  class="share-btn aspect-square rounded-xl bg-white/5 hover:bg-slate-300/20 grid place-items-center"><i data-lucide="twitter" class="w-5 h-5 text-slate-200"></i></button>
+        <button data-share="copy"     class="share-btn aspect-square rounded-xl bg-white/5 hover:bg-brand-500/20 grid place-items-center"><i data-lucide="link" class="w-5 h-5 text-brand-400"></i></button>
+      </div>
+      <div class="border-t border-white/5 pt-4">
+        <h4 class="text-sm font-semibold mb-2 flex items-center gap-2"><i data-lucide="code" class="w-4 h-4"></i> Insertar como widget (iFrame 120px)</h4>
+        <textarea id="embedCode" readonly class="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-xs font-mono text-slate-300 h-24 resize-none"></textarea>
+        <button onclick="window.copyEmbed()" class="mt-2 text-xs text-brand-400 hover:text-brand-300">Copiar código</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL RADIO -->
+  <div id="radioModal" class="hidden fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm grid place-items-center p-4 overflow-y-auto">
+    <div class="modal-fade bg-surface-900 border border-white/10 rounded-2xl w-full max-w-2xl p-6 my-8">
+      <div class="flex items-start justify-between mb-4">
+        <div>
+          <h3 id="radioModalTitle" class="text-xl font-bold">Registrar emisora</h3>
+          <p id="genreCount" class="text-xs text-slate-400 mt-1">Selecciona al menos 3 géneros</p>
+        </div>
+        <button onclick="window.closeRadioModal()" class="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 grid place-items-center">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <form id="formRadio" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <input type="hidden" name="id">
+        <input type="hidden" name="existingLogoUrl">
+        <div class="md:col-span-2"><label>Nombre *</label><input name="name" required class="input"></div>
+        <div class="md:col-span-2"><label>URL del Stream *</label><input name="streamUrl" required placeholder="https://.../stream.mp3" class="input"></div>
+
+        <div class="md:col-span-2">
+          <label>Logo / Cover</label>
+          <div class="flex items-center gap-4 p-3 bg-black/30 rounded-xl border border-white/5">
+            <div id="logoPreview" class="logo-preview empty"><span>Sin logo</span></div>
+            <div class="flex-1">
+              <input type="file" id="logoInput" accept="image/*" class="hidden">
+              <label for="logoInput" class="logo-upload-btn inline-block cursor-pointer">
+                <i data-lucide="upload" class="w-4 h-4 inline-block mr-2"></i>Elegir imagen
+              </label>
+              <p class="text-xs text-slate-500 mt-2">Se comprime a 200×200 (calidad 0.5) y se guarda en Firestore — plan gratis.</p>
+              <p id="logoStatus" class="text-xs text-slate-400 mt-1"></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="md:col-span-2">
+          <label>Géneros / Categorías * <span class="text-brand-400">(mínimo 3)</span></label>
+          <div id="genreChips" class="flex flex-wrap gap-2 p-3 bg-black/30 rounded-xl border border-white/5"></div>
+          <p id="genreError" class="hidden text-xs text-red-400 mt-2">⚠ Debes seleccionar al menos 3 géneros.</p>
+        </div>
+
+        <div><label>País *</label><input name="country" required class="input"></div>
+        <div><label>Ciudad</label><input name="city" class="input"></div>
+        <div><label>Web</label><input name="webUrl" placeholder="https://..." class="input"></div>
+        <div><label>Facebook</label><input name="facebook" placeholder="https://facebook.com/..." class="input"></div>
+        <div><label>Instagram</label><input name="instagram" placeholder="https://instagram.com/..." class="input"></div>
+        <div class="md:col-span-2"><label>Twitter / X</label><input name="twitter" placeholder="https://x.com/..." class="input"></div>
+
+        <div class="md:col-span-2 flex gap-2 pt-2">
+          <button type="button" onclick="window.closeRadioModal()" class="btn-secondary flex-1">Cancelar</button>
+          <button type="submit" id="btnSaveRadio" class="btn-primary flex-1">Guardar emisora</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="toast" class="fixed top-20 right-4 z-[70] hidden"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      getAuth, onAuthStateChanged, signInWithEmailAndPassword,
+      createUserWithEmailAndPassword, signOut, sendPasswordResetEmail
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import {
+      getFirestore, collection, doc, setDoc, updateDoc, deleteDoc,
+      onSnapshot, query, where, orderBy, getDocs, serverTimestamp, getDoc
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey:            "AIzaSyB3d6Tbek0a-cN831rjt-rOwMn3oZteM7o",
+      authDomain:        "radiowave-1c842.firebaseapp.com",
+      databaseURL:       "https://radiowave-1c842-default-rtdb.firebaseio.com",
+      projectId:         "radiowave-1c842",
+      storageBucket:     "radiowave-1c842.firebasestorage.app",
+      messagingSenderId: "432575974008",
+      appId:             "1:432575974008:web:c90af5206c0a8045193b8d"
+    };
+
+    const app  = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db   = getFirestore(app);
+
+    const DEFAULT_BANNER_URL = "https://image.jimcdn.com/app/cms/image/transf/dimension=2301x/path/sc40a039d49acf98a/backgroundarea/i2f02cd984ea6c9de/version/1625686183/image.jpg";
+
+    const GENRES = [
+      'Pop','Rock','Reggaetón','Salsa','Electrónica','Clásica','Jazz',
+      'Noticias','Deportes','Country','Urbana','Religiosa','Tropical',
+      'Baladas','Cumbia','Bachata','Merengue','Metal','Indie','Hip-Hop',
+      'R&B','Folk','Latina','K-Pop','Infantil','Cultura','Variada'
+    ];
+
+    // Detección temprana de modo embed
+    const urlParams = new URLSearchParams(location.search);
+    const EMBED_MODE = urlParams.get('embed') === '1';
+    const LISTEN_ID  = urlParams.get('listen');
+
+    const state = {
+      user: null, userData: null,
+      radios: [], myRadios: [], favorites: [],
+      currentRadio: null, currentView: 'home',
+      currentGenre: null, searchQuery: '', shareRadio: null,
+      selectedGenres: [], metadataInterval: null, lastSong: null,
+      selectedLogoFile: null, embedMode: EMBED_MODE
+    };
+
+    const $  = (sel, root = document) => root.querySelector(sel);
+    const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
+    const appEl = $('#app');
+
+    // ============================================================
+    // HELPERS
+    // ============================================================
+    function showToast(msg, type = 'success') {
+      const t = $('#toast');
+      t.className = `fixed top-20 right-4 z-[70] px-4 py-3 rounded-xl shadow-lg text-sm font-medium modal-fade ${
+        type === 'error' ? 'bg-red-500/90 text-white' :
+        type === 'info'  ? 'bg-blue-500/90 text-white' :
+                           'bg-green-500/90 text-white'
+      }`;
+      t.textContent = msg;
+      t.classList.remove('hidden');
+      setTimeout(() => t.classList.add('hidden'), 3500);
+    }
+
+    function escapeHtml(s = '') {
+      return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+
+    function renderIcons() { if (window.lucide) lucide.createIcons(); }
+
+    // Búsqueda sin tildes ni mayúsculas (NFD + strip diacríticos)
+    const norm = (s = '') => String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+    function normalizeGenres(g) {
+      if (!g) return [];
+      if (Array.isArray(g)) return g;
+      if (typeof g === 'string') return g.split(',').map(s => s.trim()).filter(Boolean);
+      return [];
+    }
+    function formatGenres(g) { return normalizeGenres(g).join(' · '); }
+    function isFavorite(radioId) { return state.favorites.some(f => f.radioId === radioId || f.id === radioId); }
+
+    function fixUrl(u) {
+      if (!u) return '';
+      return /^https?:\/\//i.test(u) ? u : 'https://' + u;
+    }
+
+    // Íconos de redes sociales CONDICIONALES (solo si existe la URL)
+    function socialLinks(r) {
+      const items = [];
+      if (r.webUrl)    items.push(['globe',    r.webUrl,    'Sitio web']);
+      if (r.facebook)  items.push(['facebook', r.facebook, 'Facebook']);
+      if (r.instagram) items.push(['instagram',r.instagram,'Instagram']);
+      if (r.twitter)   items.push(['twitter',  r.twitter,  'X / Twitter']);
+      if (!items.length) return '';
+      return `<div class="flex gap-1.5 mt-2">${items.map(([ic, url, title]) =>
+        `<a href="${escapeHtml(fixUrl(url))}" target="_blank" rel="noopener" title="${title}" class="social-ico">
+           <i data-lucide="${ic}" class="w-3 h-3 text-slate-300"></i>
+         </a>`).join('')}</div>`;
+    }
+
+    // PURGA DE BÚFER: fuerza borde en vivo agregando timestamp
+    function liveUrl(url) {
+      const sep = url.includes('?') ? '&' : '?';
+      return `${url}${sep}t=${Date.now()}`;
+    }
+
+    function portalUrl(radioId) {
+      return `${location.origin}${location.pathname}?listen=${radioId}`;
+    }
+
+    // ============================================================
+    // AUTH
+    // ============================================================
+    onAuthStateChanged(auth, async (user) => {
+      state.user = user;
+      if (user) {
+        try {
+          const snap = await getDoc(doc(db, 'users', user.uid));
+          state.userData = snap.exists() ? snap.data() : null;
+          listenFavorites();
+          listenMyRadios();
+        } catch (err) {
+          console.error('❌ Error cargando usuario:', err);
+          showToast('Error al cargar datos: ' + err.message, 'error');
+        }
+      } else {
+        state.userData = null; state.favorites = []; state.myRadios = [];
+      }
+      if (!state.embedMode) { renderAuthArea(); renderView(); updatePlayerFavButton(); }
+    });
+
+    function renderAuthArea() {
+      const el = $('#authArea');
+      if (state.user) {
+        const initial = (state.userData?.name || state.user.email)[0].toUpperCase();
+        el.innerHTML = `
+          <div class="flex items-center gap-2 bg-white/5 border border-white/10 rounded-full pl-1 pr-3 py-1">
+            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-brand-500 to-purple-600 grid place-items-center text-white text-xs font-bold">${initial}</div>
+            <span class="text-sm font-medium hidden sm:block">${escapeHtml(state.userData?.name || state.user.email)}</span>
+          </div>
+          <button onclick="window.doLogout()" class="w-9 h-9 rounded-full bg-white/5 hover:bg-red-500/20 hover:text-red-400 grid place-items-center transition">
+            <i data-lucide="log-out" class="w-4 h-4"></i>
+          </button>`;
+        $$('.auth-only').forEach(e => e.classList.remove('hidden'));
+      } else {
+        el.innerHTML = `
+          <button onclick="window.openAuth('login')" class="btn-secondary !py-2 !px-4 text-sm hidden sm:block">Iniciar</button>
+          <button onclick="window.openAuth('register')" class="btn-primary !py-2 !px-4 text-sm">Registrarse</button>`;
+        $$('.auth-only').forEach(e => e.classList.add('hidden'));
+      }
+      renderIcons();
+    }
+
+    window.openAuth = (tab = 'login') => {
+      $('#authModal').classList.remove('hidden');
+      $$('.auth-tab').forEach(t => t.classList.toggle('bg-brand-500', t.dataset.authTab === tab));
+      $$('.auth-form').forEach(f => f.classList.add('hidden'));
+      $(`#form${tab[0].toUpperCase()+tab.slice(1)}`).classList.remove('hidden');
+    };
+    window.closeAuth = () => $('#authModal').classList.add('hidden');
+    window.doLogout = async () => {
+      try { await signOut(auth); showToast('Sesión cerrada', 'info'); }
+      catch (err) { showToast('Error al salir: ' + err.message, 'error'); }
+    };
+
+    $$('.auth-tab').forEach(t => t.addEventListener('click', () => window.openAuth(t.dataset.authTab)));
+
+    $('#formLogin').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const { email, password } = Object.fromEntries(new FormData(e.target));
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        window.closeAuth(); showToast('¡Bienvenido/a!');
+      } catch (err) { showAuthError(traducirError(err.code)); }
+    });
+
+    $('#formRegister').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const d = Object.fromEntries(new FormData(e.target));
+      try {
+        const cred = await createUserWithEmailAndPassword(auth, d.email, d.password);
+        await setDoc(doc(db, 'users', cred.user.uid), {
+          name: d.name, email: d.email, role: d.role,
+          secretQuestion: d.secretQuestion,
+          secretAnswer: d.secretAnswer.toLowerCase().trim(),
+          createdAt: serverTimestamp()
+        });
+        window.closeAuth(); showToast('¡Cuenta creada exitosamente!');
+      } catch (err) { showAuthError(traducirError(err.code)); }
+    });
+
+    $('#formRecover').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = $('#recEmail').value.trim();
+      const secret = $('#recSecret').value.trim().toLowerCase();
+      try {
+        const snap = await getDocs(query(collection(db, 'users'), where('email', '==', email)));
+        if (snap.empty) throw new Error('Correo no registrado');
+        if (snap.docs[0].data().secretAnswer !== secret) throw new Error('Respuesta secreta incorrecta');
+        await sendPasswordResetEmail(auth, email);
+        showAuthSuccess('✅ Frase válida. Te enviamos un enlace al correo.');
+        e.target.reset();
+      } catch (err) { showAuthError(err.message || traducirError(err.code)); }
+    });
+
+    function showAuthError(msg) {
+      $('#authError').textContent = msg;
+      $('#authError').classList.remove('hidden');
+      $('#authSuccess').classList.add('hidden');
+    }
+    function showAuthSuccess(msg) {
+      $('#authSuccess').textContent = msg;
+      $('#authSuccess').classList.remove('hidden');
+      $('#authError').classList.add('hidden');
+    }
+    function traducirError(code) {
+      const map = {
+        'auth/invalid-email': 'Correo inválido.',
+        'auth/user-not-found': 'Usuario no encontrado.',
+        'auth/wrong-password': 'Contraseña incorrecta.',
+        'auth/email-already-in-use': 'Ese correo ya está registrado.',
+        'auth/weak-password': 'Contraseña muy débil (mínimo 6 caracteres).',
+        'auth/invalid-credential': 'Credenciales inválidas.'
+      };
+      return map[code] || 'Error: ' + code;
+    }
+
+    // ============================================================
+    // FIRESTORE LISTENERS
+    // ============================================================
+    onSnapshot(query(collection(db, 'radios'), orderBy('createdAt', 'desc')), (snap) => {
+      state.radios = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      console.log('📻 Radios cargadas:', state.radios.length);
+      if (!state.embedMode) { renderView(); updatePlayerFavButton(); }
+    }, (err) => {
+      console.error('❌ Error radios:', err);
+      if (!state.embedMode) showToast('Error al cargar emisoras: ' + err.message, 'error');
+    });
+
+    function listenMyRadios() {
+      if (!state.user) return;
+      if (window._myRadiosUnsub) window._myRadiosUnsub();
+      window._myRadiosUnsub = onSnapshot(
+        query(collection(db, 'radios'), where('ownerId', '==', state.user.uid)),
+        (snap) => {
+          state.myRadios = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+          if (state.currentView === 'dashboard' && !state.embedMode) renderView();
+        },
+        (err) => { console.error('❌ Error mis radios:', err); showToast('Error: ' + err.message, 'error'); }
+      );
+    }
+
+    function listenFavorites() {
+      if (!state.user) return;
+      if (window._favUnsub) window._favUnsub();
+      window._favUnsub = onSnapshot(
+        collection(db, 'users', state.user.uid, 'favorites'),
+        (snap) => {
+          state.favorites = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+          if (!state.embedMode) { renderView(); updatePlayerFavButton(); }
+        },
+        (err) => { console.error('❌ Error favoritos:', err); showToast('Error: ' + err.message, 'error'); }
+      );
+    }
+
+    async function toggleFavorite(radio) {
+      if (!state.user) { window.openAuth('login'); return; }
+      if (!radio?.id) { showToast('Radio inválida', 'error'); return; }
+      try {
+        const ref = doc(db, 'users', state.user.uid, 'favorites', radio.id);
+        const snap = await getDoc(ref);
+        if (snap.exists()) {
+          await deleteDoc(ref);
+          showToast('Quitado de favoritos', 'info');
+        } else {
+          await setDoc(ref, {
+            radioId: radio.id, name: radio.name,
+            logoUrl: radio.logoUrl || '',
+            genre: normalizeGenres(radio.genre),
+            streamUrl: radio.streamUrl,
+            savedAt: serverTimestamp()
+          });
+          showToast('Añadido a favoritos ❤️');
+        }
+      } catch (err) {
+        console.error('❌ Error favorito:', err);
+        showToast('Error: ' + err.message, 'error');
+      }
+    }
+
+    // ============================================================
+    // COMPRESIÓN DE LOGO — 200x200 máx, calidad 0.5 (Firestore ligero)
+    // ============================================================
+    function fileToImage(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = e => {
+          const img = new Image();
+          img.onload = () => resolve(img);
+          img.onerror = () => reject(new Error('Imagen inválida'));
+          img.src = e.target.result;
+        };
+        reader.onerror = () => reject(new Error('No se pudo leer el archivo'));
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function drawScaled(img, maxSize) {
+      let w = img.width, h = img.height;
+      if (w > h) { if (w > maxSize) { h = Math.round(h * maxSize / w); w = maxSize; } }
+      else       { if (h > maxSize) { w = Math.round(w * maxSize / h); h = maxSize; } }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      return canvas;
+    }
+
+    async function compressToDataURL(file) {
+      const img = await fileToImage(file);
+      // Estricto: máximo 200x200, calidad 0.5 (con fallbacks menores si aún pesa)
+      const levels = [ { size: 200, q: 0.5 }, { size: 160, q: 0.45 }, { size: 140, q: 0.4 } ];
+      let last = null;
+      for (const lv of levels) {
+        const canvas = drawScaled(img, lv.size);
+        let dataUrl = canvas.toDataURL('image/webp', lv.q);
+        if (!dataUrl.startsWith('data:image/webp')) dataUrl = canvas.toDataURL('image/jpeg', lv.q);
+        last = dataUrl;
+        const kb = dataUrl.length / 1024;
+        console.log(`🗜️ Logo ${lv.size}px q${lv.q} → ${kb.toFixed(1)} KB`);
+        if (kb <= 150) return dataUrl;
+      }
+      if (last.length / 1024 > 900) throw new Error('Imagen demasiado pesada incluso comprimida');
+      return last;
+    }
+
+    // ============================================================
+    // GUARDAR / ELIMINAR RADIO
+    // ============================================================
+    async function saveRadio(data) {
+      if (!auth.currentUser) throw new Error('Debes iniciar sesión');
+      const radioId = data.id || doc(collection(db, 'radios')).id;
+      let logoUrl = data.existingLogoUrl || '';
+      if (state.selectedLogoFile) {
+        logoUrl = await compressToDataURL(state.selectedLogoFile);
+        console.log('📦 Logo final:', (logoUrl.length / 1024).toFixed(1), 'KB');
+      }
+      const payload = {
+        name: data.name,
+        streamUrl: data.streamUrl,
+        logoUrl,
+        bannerUrl: DEFAULT_BANNER_URL,
+        genre: data.genre,
+        country: data.country,
+        city: data.city || '',
+        webUrl: fixUrl(data.webUrl || ''),
+        facebook: fixUrl(data.facebook || ''),
+        instagram: fixUrl(data.instagram || ''),
+        twitter: fixUrl(data.twitter || ''),
+        ownerId: auth.currentUser.uid,
+        ownerName: state.userData?.name || '',
+        updatedAt: serverTimestamp()
+      };
+      if (data.id) {
+        await updateDoc(doc(db, 'radios', data.id), payload);
+        console.log('✏️ Radio actualizada:', data.id);
+      } else {
+        payload.createdAt = serverTimestamp();
+        await setDoc(doc(db, 'radios', radioId), payload);
+        console.log('➕ Radio creada:', radioId);
+      }
+    }
+
+    async function deleteRadio(id) {
+      if (!confirm('¿Estás seguro de eliminar esta radio? Esta acción no se puede deshacer.')) return;
+      try {
+        await deleteDoc(doc(db, 'radios', id));
+        showToast('Emisora eliminada correctamente');
+      } catch (err) {
+        console.error('❌ Error al eliminar:', err);
+        showToast('Error al eliminar: ' + err.message, 'error');
+      }
+    }
+
+    // ============================================================
+    // METADATA SERVICE
+    // ============================================================
+    const MetadataService = {
+      getBaseUrl(streamUrl) {
+        try {
+          const url = new URL(streamUrl);
+          const path = url.pathname.replace(/\/[^\/]*\.[a-z0-9]+$/i, '').replace(/\/$/, '');
+          return url.origin + path;
+        } catch { return null; }
+      },
+      async fetch(streamUrl) {
+        const base = this.getBaseUrl(streamUrl);
+        if (!base) return null;
+        const endpoints = [
+          `${base}/status-json.xsl`, `${base}/stats?json=1`, `${base}/statistics?json=1`,
+          `${base}/api/live/info`, `${base}/nowplaying`
+        ];
+        for (const url of endpoints) {
+          try {
+            const res = await fetch(url, { mode: 'cors', signal: AbortSignal.timeout(4000) });
+            if (!res.ok) continue;
+            const parsed = this.parse(await res.json());
+            if (parsed) return parsed;
+          } catch (e) { /* siguiente */ }
+        }
+        return null;
+      },
+      parse(data) {
+        if (!data) return null;
+        if (data.icestats?.source) {
+          const sources = Array.isArray(data.icestats.source) ? data.icestats.source : [data.icestats.source];
+          for (const src of sources) {
+            if (src.title) return { title: src.artist ? `${src.artist} - ${src.title}` : src.title };
+          }
+        }
+        if (data.songtitle || data.title) return { title: data.songtitle || data.title };
+        if (data.now_playing?.song) {
+          const s = data.now_playing.song;
+          return { title: `${s.artist || ''} - ${s.title || ''}`.trim() };
+        }
+        return null;
+      }
+    };
+
+    // ============================================================
+    // AUDIO (compartido por player principal y embed)
+    // ============================================================
+    const audio = new Audio();
+    audio.preload = 'none';
+
+    // PERSISTENCIA DE VOLUMEN (localStorage — solo preferencia de UI)
+    const savedVol = localStorage.getItem('rw_volume');
+    audio.volume = savedVol !== null ? parseFloat(savedVol) : 0.8;
+
+    let reconnectTimer = null;
+
+    function syncVolume(v) {
+      audio.volume = v;
+      localStorage.setItem('rw_volume', String(v));
+      $('#volSlider').value = v;
+      $('#eVol').value = v;
+    }
+
+    function setPlayIcons(playing) {
+      $('#btnPlayIcon').setAttribute('data-lucide', playing ? 'pause' : 'play');
+      $('#ePlayIcon').setAttribute('data-lucide', playing ? 'pause' : 'play');
+      renderIcons();
+    }
+
+    function setMuteIcons() {
+      const ic = audio.muted ? 'volume-x' : 'volume-2';
+      $('#btnMuteIcon').setAttribute('data-lucide', ic);
+      $('#eMuteIcon').setAttribute('data-lucide', ic);
+      renderIcons();
+    }
+
+    function setStatus(msg) { $('#pStatus').textContent = msg; }
+
+    // Actualiza canción en AMBOS players
+    function updateSongDisplay(text) {
+      const clean = (text || 'Transmisión en vivo').trim();
+      if (clean === state.lastSong) return;
+      state.lastSong = clean;
+      ['#pSong', '#eSong'].forEach(sel => {
+        const el = $(sel);
+        if (!el) return;
+        el.classList.remove('song-update');
+        void el.offsetWidth;
+        el.textContent = clean;
+        el.classList.add('song-update');
+      });
+    }
+
+    function startMetadataPolling() {
+      stopMetadataPolling();
+      if (!state.currentRadio) return;
+      const poll = async () => {
+        if (!state.currentRadio) return;
+        try {
+          const meta = await MetadataService.fetch(state.currentRadio.streamUrl);
+          updateSongDisplay(meta?.title || 'Transmisión en vivo');
+        } catch { updateSongDisplay('Transmisión en vivo'); }
+      };
+      poll();
+      state.metadataInterval = setInterval(poll, 15000);
+    }
+    function stopMetadataPolling() {
+      if (state.metadataInterval) { clearInterval(state.metadataInterval); state.metadataInterval = null; }
+    }
+
+    // REPRODUCIR con PURGA DE BÚFER
+    function playRadio(radio) {
+      if (!radio) return;
+      if (state.currentRadio?.id === radio.id && !audio.paused) { audio.pause(); return; }
+      state.currentRadio = radio;
+      audio.src = liveUrl(radio.streamUrl); // ← purga: siempre borde en vivo
+      audio.play().catch(err => { console.warn('Autoplay bloqueado o error:', err.message); setStatus('Pulsa ▶ para escuchar'); });
+      if (!state.embedMode) $('#audioPlayer').classList.remove('hidden');
+      updatePlayerUI();
+      startMetadataPolling();
+    }
+
+    // Reanudar TAMBIÉN purga el búfer
+    function resumeLive() {
+      if (!state.currentRadio) return;
+      audio.src = liveUrl(state.currentRadio.streamUrl);
+      audio.play().catch(() => setStatus('Error al reproducir'));
+    }
+
+    function updatePlayerUI() {
+      const r = state.currentRadio;
+      if (!r) return;
+      // Player principal
+      $('#pName').textContent = r.name || 'Radio';
+      $('#pGenre').textContent = [formatGenres(r.genre), r.city, r.country].filter(Boolean).join(' · ');
+      const logo = $('#pLogo');
+      if (r.logoUrl) { logo.src = r.logoUrl; logo.classList.remove('hidden'); $('#pIcon').classList.add('hidden'); }
+      else { logo.classList.add('hidden'); $('#pIcon').classList.remove('hidden'); }
+      $('#pLive').classList.remove('hidden'); $('#pLive').classList.add('flex');
+      // Player embed
+      $('#eName').textContent = r.name || 'Radio';
+      $('#eName').href = portalUrl(r.id);
+      $('#eBrand').href = portalUrl(r.id);
+      const eLogo = $('#eLogo');
+      if (r.logoUrl) { eLogo.src = r.logoUrl; eLogo.classList.remove('hidden'); $('#eIcon').classList.add('hidden'); }
+      else { eLogo.classList.add('hidden'); $('#eIcon').classList.remove('hidden'); }
+
+      updateSongDisplay('Transmisión en vivo');
+      updatePlayerFavButton();
+      renderIcons();
+    }
+
+    function updatePlayerFavButton() {
+      const icon = $('#btnPlayerFavIcon');
+      if (!icon || !state.currentRadio) return;
+      const fav = isFavorite(state.currentRadio.id);
+      icon.classList.toggle('fill-red-500', fav);
+      icon.classList.toggle('text-red-500', fav);
+      icon.classList.toggle('text-slate-300', !fav);
+      renderIcons();
+    }
+
+    audio.addEventListener('playing', () => {
+      clearTimeout(reconnectTimer);
+      setStatus('Transmitiendo');
+      setPlayIcons(true);
+      startMetadataPolling();
+    });
+    audio.addEventListener('pause', () => { setPlayIcons(false); stopMetadataPolling(); });
+    audio.addEventListener('waiting', () => setStatus('Cargando...'));
+    audio.addEventListener('error', () => {
+      setStatus('Reconectando...');
+      clearTimeout(reconnectTimer);
+      reconnectTimer = setTimeout(() => { if (audio.src && state.currentRadio) audio.load(); }, 5000);
+    });
+    audio.addEventListener('stalled', () => setStatus('Reconectando...'));
+
+    // ---- Controles player principal ----
+    $('#btnPlay').addEventListener('click', () => {
+      if (!state.currentRadio) { if (state.radios.length) playRadio(state.radios[0]); return; }
+      audio.paused ? resumeLive() : audio.pause();
+    });
+    $('#btnPlayerFav').addEventListener('click', async () => {
+      if (!state.currentRadio) { showToast('No hay radio reproduciéndose', 'info'); return; }
+      const icon = $('#btnPlayerFavIcon');
+      icon.classList.add('heart-pop');
+      setTimeout(() => icon.classList.remove('heart-pop'), 350);
+      await toggleFavorite(state.currentRadio);
+    });
+    $('#btnShare').addEventListener('click', () => {
+      if (state.currentRadio) window.openShare(state.currentRadio);
+    });
+    $('#btnMute').addEventListener('click', () => { audio.muted = !audio.muted; setMuteIcons(); });
+    $('#volSlider').addEventListener('input', (e) => syncVolume(+e.target.value));
+    $('#btnClose').addEventListener('click', () => {
+      audio.pause(); audio.src = '';
+      state.currentRadio = null;
+      stopMetadataPolling();
+      $('#audioPlayer').classList.add('hidden');
+    });
+
+    // ---- Controles player embed ----
+    $('#ePlay').addEventListener('click', () => {
+      if (!state.currentRadio) return;
+      audio.paused ? resumeLive() : audio.pause();
+    });
+    $('#eMute').addEventListener('click', () => { audio.muted = !audio.muted; setMuteIcons(); });
+    $('#eVol').addEventListener('input', (e) => syncVolume(+e.target.value));
+
+    // ============================================================
+    // SPA ROUTER + VISTAS
+    // ============================================================
+    $$('[data-nav]').forEach(btn => btn.addEventListener('click', () => {
+      const v = btn.dataset.nav;
+      if (['favorites','dashboard'].includes(v) && !state.user) { window.openAuth('login'); return; }
+      state.currentView = v;
+      renderView();
+    }));
+
+    function renderView() {
+      if (state.embedMode) return; // en embed NO se renderiza el portal
+      $$('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.nav === state.currentView));
+      const v = state.currentView;
+      if (v === 'home')      renderHome();
+      if (v === 'explore')   renderExplore();
+      if (v === 'favorites') renderFavorites();
+      if (v === 'dashboard') renderDashboard();
+      renderIcons();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function renderHome() {
+      const genres = [...new Set(state.radios.flatMap(r => normalizeGenres(r.genre)))];
+      const list = state.currentGenre
+        ? state.radios.filter(r => normalizeGenres(r.genre).includes(state.currentGenre))
+        : state.radios;
+      const featured = list.slice(0, 8);
+
+      appEl.innerHTML = `
+        <section class="relative rounded-3xl overflow-hidden border border-white/10 mb-10">
+          <img src="${DEFAULT_BANNER_URL}" class="absolute inset-0 w-full h-full object-cover opacity-40">
+          <div class="relative p-8 md:p-12">
+            <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-red-300 bg-red-500/20 px-2 py-1 rounded-full">
+              <span class="live-dot"></span> EN VIVO AHORA
+            </span>
+            <h1 class="text-3xl md:text-5xl font-bold mt-3 mb-2">La música nunca se detiene</h1>
+            <p class="text-slate-300 max-w-xl mb-5">Descubre emisoras de todo el mundo, sincroniza tus favoritos en todos tus dispositivos.</p>
+            ${state.radios[0] ? `<button class="btn-primary" onclick="window.playById('${state.radios[0].id}')">▶ Escuchar ${escapeHtml(state.radios[0].name)}</button>` : ''}
+          </div>
+        </section>
+
+        <section class="mb-10">
+          <h2 class="text-2xl font-bold mb-4">Filtrar por género</h2>
+          <div class="flex gap-2 flex-wrap">
+            <button data-genre="" class="genre-btn ${!state.currentGenre ? 'selected' : ''}">Todos</button>
+            ${genres.map(g => `<button data-genre="${escapeHtml(g)}" class="genre-btn ${state.currentGenre === g ? 'selected' : ''}">${escapeHtml(g)}</button>`).join('')}
+          </div>
+        </section>
+
+        <section class="mb-10">
+          <h2 class="text-2xl font-bold mb-4">${state.currentGenre ? `Emisoras de ${escapeHtml(state.currentGenre)}` : 'Destacadas'}</h2>
+          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            ${featured.length ? featured.map(radioCard).join('') : `<div class="col-span-full text-center text-slate-400 py-12">Aún no hay emisoras.</div>`}
+          </div>
+        </section>
+
+        <section>
+          <h2 class="text-2xl font-bold mb-4">Todas las emisoras</h2>
+          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            ${list.length ? list.map(radioCard).join('') : '<div class="col-span-full text-center text-slate-400 py-8">Sin resultados</div>'}
+          </div>
+        </section>
+      `;
+      $$('.genre-btn').forEach(b => b.addEventListener('click', () => {
+        state.currentGenre = b.dataset.genre || null;
+        renderHome();
+        renderIcons();
+      }));
+    }
+
+    function renderExplore() {
+      appEl.innerHTML = `
+        <h2 class="text-3xl font-bold mb-6">Explorar</h2>
+        <div class="relative mb-6">
+          <i data-lucide="search" class="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"></i>
+          <input id="searchInput" type="search" placeholder="Busca por nombre, género, país o ciudad (ignora tildes)..."
+                 class="input !pl-12 !py-3 !text-base" value="${escapeHtml(state.searchQuery)}">
+        </div>
+        <div id="searchResults" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          ${filteredRadios().map(radioCard).join('') || '<div class="col-span-full text-center text-slate-400 py-12">Sin resultados</div>'}
+        </div>
+      `;
+      $('#searchInput').addEventListener('input', (e) => {
+        state.searchQuery = e.target.value;
+        $('#searchResults').innerHTML = filteredRadios().map(radioCard).join('') || '<div class="col-span-full text-center text-slate-400 py-12">Sin resultados</div>';
+        renderIcons();
+      });
+    }
+
+    // BÚSQUEDA DINÁMICA sin mayúsculas ni tildes
+    function filteredRadios() {
+      const q = norm(state.searchQuery.trim());
+      if (!q) return state.radios;
+      return state.radios.filter(r =>
+        norm(r.name).includes(q) ||
+        normalizeGenres(r.genre).some(g => norm(g).includes(q)) ||
+        norm(r.country).includes(q) ||
+        norm(r.city).includes(q)
+      );
+    }
+
+    function renderFavorites() {
+      const favRadios = state.favorites
+        .map(f => state.radios.find(r => r.id === f.radioId) || f)
+        .filter(Boolean);
+      appEl.innerHTML = `
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-3xl font-bold">Mis Favoritos</h2>
+          <span class="text-sm text-slate-400">${favRadios.length} emisora${favRadios.length !== 1 ? 's' : ''}</span>
+        </div>
+        ${favRadios.length
+          ? `<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">${favRadios.map(radioCard).join('')}</div>`
+          : `<div class="text-center py-20">
+               <div class="w-20 h-20 rounded-full bg-white/5 grid place-items-center mx-auto mb-4">
+                 <i data-lucide="heart" class="w-10 h-10 text-slate-500"></i>
+               </div>
+               <h3 class="text-lg font-semibold mb-2">Tu colección está vacía</h3>
+               <p class="text-slate-400 mb-4">Guarda tus emisoras favoritas y accede desde cualquier dispositivo.</p>
+               <button onclick="window.nav('explore')" class="btn-primary">Explorar emisoras</button>
+             </div>`}
+      `;
+    }
+    window.nav = (v) => { state.currentView = v; renderView(); };
+
+    function renderDashboard() {
+      const isBroadcaster = state.userData?.role === 'broadcaster';
+      appEl.innerHTML = `
+        <div class="flex items-center justify-between mb-6">
+          <div>
+            <h2 class="text-3xl font-bold">Mi Panel</h2>
+            <p class="text-slate-400 text-sm">Rol: ${isBroadcaster ? '🎙️ Emisora / Creador' : '🎧 Oyente'}</p>
+          </div>
+          ${isBroadcaster
+            ? `<button onclick="window.openRadioModal()" class="btn-primary">+ Agregar emisora</button>`
+            : `<button onclick="window.upgradeRole()" class="btn-secondary">Convertirme en Emisora</button>`}
+        </div>
+        ${isBroadcaster ? `
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            ${state.myRadios.length
+              ? state.myRadios.map(dashboardCard).join('')
+              : `<div class="col-span-full text-center py-16 bg-white/5 rounded-2xl border border-dashed border-white/10">
+                   <p class="text-slate-400 mb-3">Aún no has registrado emisoras.</p>
+                   <button onclick="window.openRadioModal()" class="btn-primary">+ Registrar mi primera emisora</button>
+                 </div>`}
+          </div>
+        ` : `
+          <div class="text-center py-16 bg-white/5 rounded-2xl border border-dashed border-white/10">
+            <div class="w-20 h-20 rounded-full bg-brand-500/20 grid place-items-center mx-auto mb-4">
+              <i data-lucide="mic" class="w-10 h-10 text-brand-400"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-2">Conviértete en Emisora</h3>
+            <p class="text-slate-400 max-w-md mx-auto mb-4">Registra tu radio, sube tu streaming y compártelo con el mundo.</p>
+          </div>
+        `}
+      `;
+    }
+
+    window.upgradeRole = async () => {
+      if (!state.user) return;
+      try {
+        await updateDoc(doc(db, 'users', state.user.uid), { role: 'broadcaster' });
+        state.userData.role = 'broadcaster';
+        showToast('¡Ahora eres Emisora!');
+        renderView();
+      } catch (err) { showToast('Error: ' + err.message, 'error'); }
+    };
+
+    // ============================================================
+    // TARJETAS (con redes sociales condicionales)
+    // ============================================================
+    function radioCard(r) {
+      const fav = isFavorite(r.id);
+      const isPlaying = state.currentRadio?.id === r.id;
+      const genres = normalizeGenres(r.genre);
+      const genreText = genres.length
+        ? genres.slice(0, 2).join(' · ') + (genres.length > 2 ? ` +${genres.length - 2}` : '')
+        : '';
+      return `
+        <div class="group relative bg-white/5 hover:bg-white/10 rounded-2xl overflow-hidden border border-white/5 transition hover:-translate-y-1 hover:shadow-xl hover:shadow-brand-500/10">
+          <div class="aspect-square relative overflow-hidden bg-surface-900">
+            ${r.logoUrl
+              ? `<img src="${r.logoUrl}" alt="${escapeHtml(r.name)}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                 <div class="absolute inset-0 bg-gradient-to-br from-brand-600 to-purple-700 grid place-items-center hidden"><i data-lucide="radio" class="w-12 h-12 text-white"></i></div>`
+              : `<div class="absolute inset-0 bg-gradient-to-br from-brand-600 to-purple-700 grid place-items-center"><i data-lucide="radio" class="w-12 h-12 text-white"></i></div>`}
+
+            <div class="absolute top-2 right-2 z-20">
+              <button data-action="fav" data-id="${r.id}"
+                      class="w-9 h-9 rounded-full bg-black/60 backdrop-blur grid place-items-center hover:bg-black/80 transition"
+                      title="${fav ? 'Quitar de favoritos' : 'Agregar a favoritos'}">
+                <i data-lucide="heart" class="w-4 h-4 ${fav ? 'fill-red-500 text-red-500' : 'text-white'}"></i>
+              </button>
+            </div>
+
+            ${isPlaying ? `<div class="absolute bottom-2 left-2 z-10 flex items-center gap-1 text-xs font-bold text-white bg-red-500/90 px-2 py-1 rounded-full"><span class="live-dot"></span> Sonando</div>` : ''}
+
+            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition grid place-items-center opacity-0 group-hover:opacity-100">
+              <button data-action="play" data-id="${r.id}" class="w-14 h-14 rounded-full bg-brand-500 hover:bg-brand-600 grid place-items-center shadow-lg">
+                <i data-lucide="play" class="w-6 h-6 text-white"></i>
+              </button>
+            </div>
+          </div>
+          <div class="p-3">
+            <div class="flex items-start justify-between gap-2">
+              <h3 class="font-semibold truncate">${escapeHtml(r.name)}</h3>
+              <button data-action="share" data-id="${r.id}" class="shrink-0 w-7 h-7 rounded-full bg-white/5 hover:bg-white/10 grid place-items-center" title="Compartir">
+                <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+            <p class="text-xs text-slate-400 truncate">${escapeHtml(genreText)}</p>
+            <p class="text-xs text-slate-500 truncate">${escapeHtml([r.city, r.country].filter(Boolean).join(', '))}</p>
+            ${socialLinks(r)}
+          </div>
+        </div>`;
+    }
+
+    function dashboardCard(r) {
+      const genres = normalizeGenres(r.genre);
+      return `
+        <div class="bg-white/5 rounded-2xl border border-white/5 overflow-hidden">
+          <div class="aspect-video relative bg-surface-900 overflow-hidden">
+            <img src="${DEFAULT_BANNER_URL}" class="w-full h-full object-cover">
+            ${r.logoUrl ? `<div class="absolute inset-0 grid place-items-center"><img src="${r.logoUrl}" class="w-20 h-20 rounded-xl object-cover shadow-xl"></div>` : ''}
+          </div>
+          <div class="p-4">
+            <h3 class="font-semibold mb-1">${escapeHtml(r.name)}</h3>
+            <p class="text-xs text-slate-400 mb-1 truncate">${escapeHtml(genres.join(' · '))}</p>
+            ${socialLinks(r)}
+            <div class="flex gap-2 mt-3">
+              <button onclick="window.playById('${r.id}')" class="btn-secondary flex-1 !py-2 text-xs">▶ Reproducir</button>
+              <button onclick="window.openRadioModal('${r.id}')" class="btn-secondary !py-2 !px-3 text-xs" title="Editar"><i data-lucide="edit" class="w-3.5 h-3.5"></i></button>
+              <button onclick="window.deleteRadio('${r.id}')" class="btn-secondary !py-2 !px-3 text-xs hover:!bg-red-500/20 hover:text-red-400" title="Eliminar"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    // Delegación de eventos global (una sola vez)
+    let bound = false;
+    function bindInteractiveCards() {
+      if (bound) return;
+      bound = true;
+      document.addEventListener('click', async (e) => {
+        const btn = e.target.closest('[data-action]');
+        if (!btn) return;
+        e.stopPropagation();
+        e.preventDefault();
+        const { action, id } = btn.dataset;
+        const r = state.radios.find(x => x.id === id);
+        if (!r) return;
+        if (action === 'play') playRadio(r);
+        else if (action === 'fav') {
+          const icon = btn.querySelector('i');
+          if (icon) { icon.classList.add('heart-pop'); setTimeout(() => icon.classList.remove('heart-pop'), 350); }
+          await toggleFavorite(r);
+        }
+        else if (action === 'share') window.openShare(r);
+      });
+    }
+    bindInteractiveCards();
+
+    window.playById = (id) => {
+      const r = state.radios.find(x => x.id === id);
+      if (r) playRadio(r);
+    };
+    window.deleteRadio = (id) => deleteRadio(id);
+
+    // ============================================================
+    // MODAL RADIO
+    // ============================================================
+    function renderGenreChips(selected = []) {
+      state.selectedGenres = [...selected];
+      const container = $('#genreChips');
+      container.innerHTML = GENRES.map(g =>
+        `<button type="button" data-genre="${escapeHtml(g)}" class="genre-chip ${selected.includes(g) ? 'selected' : ''}">${escapeHtml(g)}</button>`
+      ).join('');
+      updateGenreCount();
+      container.querySelectorAll('.genre-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+          const g = chip.dataset.genre;
+          if (state.selectedGenres.includes(g)) {
+            state.selectedGenres = state.selectedGenres.filter(x => x !== g);
+            chip.classList.remove('selected');
+          } else {
+            state.selectedGenres.push(g);
+            chip.classList.add('selected');
+          }
+          updateGenreCount();
+        });
+      });
+    }
+
+    function updateGenreCount() {
+      const count = state.selectedGenres.length;
+      const el = $('#genreCount');
+      if (count === 0)    { el.textContent = 'Selecciona al menos 3 géneros'; el.className = 'text-xs text-slate-400 mt-1'; }
+      else if (count < 3) { el.textContent = `${count} de 3 seleccionados`; el.className = 'text-xs text-amber-400 mt-1'; }
+      else                { el.textContent = `✓ ${count} géneros seleccionados`; el.className = 'text-xs text-green-400 mt-1'; }
+      $('#genreError').classList.add('hidden');
+    }
+
+    window.openRadioModal = (id = null) => {
+      if (!state.user) { showToast('Debes iniciar sesión', 'error'); window.openAuth('login'); return; }
+      if (state.userData?.role !== 'broadcaster') { showToast('Debes tener rol de Emisora', 'error'); return; }
+
+      const form = $('#formRadio');
+      form.reset();
+      state.selectedLogoFile = null;
+      const preview = $('#logoPreview');
+      preview.className = 'logo-preview empty';
+      preview.innerHTML = '<span>Sin logo</span>';
+      $('#logoStatus').textContent = '';
+
+      if (id) {
+        const r = state.myRadios.find(x => x.id === id);
+        if (!r) { showToast('Emisora no encontrada', 'error'); return; }
+        $('#radioModalTitle').textContent = 'Editar emisora';
+        form.elements.id.value = r.id;
+        form.elements.name.value = r.name || '';
+        form.elements.streamUrl.value = r.streamUrl || '';
+        form.elements.country.value = r.country || '';
+        form.elements.city.value = r.city || '';
+        form.elements.webUrl.value = r.webUrl || '';
+        form.elements.facebook.value = r.facebook || '';
+        form.elements.instagram.value = r.instagram || '';
+        form.elements.twitter.value = r.twitter || '';
+        form.elements.existingLogoUrl.value = r.logoUrl || '';
+        if (r.logoUrl) {
+          preview.className = 'logo-preview';
+          preview.innerHTML = `<img src="${r.logoUrl}" alt="Logo">`;
+          $('#logoStatus').textContent = 'Logo actual cargado';
+        }
+        renderGenreChips(normalizeGenres(r.genre));
+      } else {
+        $('#radioModalTitle').textContent = 'Registrar emisora';
+        form.elements.id.value = '';
+        form.elements.existingLogoUrl.value = '';
+        renderGenreChips([]);
+      }
+      $('#radioModal').classList.remove('hidden');
+      renderIcons();
+    };
+
+    window.closeRadioModal = () => {
+      $('#radioModal').classList.add('hidden');
+      $('#genreError').classList.add('hidden');
+      state.selectedLogoFile = null;
+      $('#formRadio').reset();
+    };
+
+    $('#logoInput').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      if (!file.type.startsWith('image/')) { showToast('Solo se permiten imágenes', 'error'); e.target.value = ''; return; }
+      if (file.size > 8 * 1024 * 1024) { showToast('Archivo muy grande (máx 8 MB)', 'error'); e.target.value = ''; return; }
+      state.selectedLogoFile = file;
+      $('#logoStatus').textContent = `✅ ${file.name} (${(file.size/1024).toFixed(0)} KB) — se comprimirá a 200×200 al guardar`;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        $('#logoPreview').className = 'logo-preview';
+        $('#logoPreview').innerHTML = `<img src="${ev.target.result}" alt="Preview">`;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    $('#formRadio').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!auth.currentUser) { showToast('Debes iniciar sesión', 'error'); window.openAuth('login'); return; }
+      if (state.selectedGenres.length < 3) {
+        $('#genreError').classList.remove('hidden');
+        showToast('Selecciona al menos 3 géneros', 'error');
+        return;
+      }
+      const d = Object.fromEntries(new FormData(e.target));
+      d.genre = [...state.selectedGenres];
+
+      const btn = $('#btnSaveRadio');
+      const original = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'Guardando...';
+      try {
+        await saveRadio(d);
+        window.closeRadioModal();
+        showToast('✅ Emisora guardada correctamente');
+      } catch (err) {
+        console.error('❌ Error al guardar:', err);
+        showToast('Error: ' + err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = original;
+      }
+    });
+
+    // ============================================================
+    // COMPARTIR + EMBED CODE
+    // ============================================================
+    window.openShare = (radio) => {
+      state.shareRadio = radio;
+      const url = portalUrl(radio.id);
+      const text = `Escucha ${radio.name} en RadioWave 🎵`;
+      $('#shareName').textContent = radio.name;
+      $('#embedCode').value = `<iframe src="${url}&embed=1" width="340" height="120" frameborder="0" style="border-radius:12px; border:1px solid #1f2937;"></iframe>`;
+      const links = {
+        whatsapp: `https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`,
+        telegram: `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`,
+        facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
+        twitter:  `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`
+      };
+      $$('.share-btn').forEach(b => b.onclick = () => {
+        const k = b.dataset.share;
+        if (k === 'copy') { navigator.clipboard.writeText(url); showToast('Enlace copiado'); }
+        else window.open(links[k], '_blank');
+      });
+      $('#shareModal').classList.remove('hidden');
+      renderIcons();
+    };
+    window.closeShare = () => $('#shareModal').classList.add('hidden');
+    window.copyEmbed = () => { navigator.clipboard.writeText($('#embedCode').value); showToast('Código iFrame copiado'); };
+
+    // ============================================================
+    // INIT: modo embed vs portal completo
+    // ============================================================
+    function initEmbed(listenId) {
+      document.body.classList.add('embed-mode');
+      $('#embedPlayer').classList.remove('hidden');
+      $('#volSlider') && ($('#eVol').value = audio.volume);
+      renderIcons();
+
+      const check = setInterval(() => {
+        const r = state.radios.find(x => x.id === listenId);
+        if (r) {
+          clearInterval(check);
+          state.currentRadio = r;
+          updatePlayerUI();
+          // Intento de autoplay (el navegador puede bloquearlo → queda el ▶)
+          audio.src = liveUrl(r.streamUrl);
+          audio.play().catch(() => setPlayIcons(false));
+          startMetadataPolling();
+        }
+      }, 300);
+    }
+
+    // Sincroniza sliders con volumen guardado
+    $('#volSlider').value = audio.volume;
+    $('#eVol').value = audio.volume;
+
+    console.log('🚀 RadioWave iniciando...', EMBED_MODE ? '(MODO EMBED 120px)' : '(portal completo)');
+
+    if (EMBED_MODE && LISTEN_ID) {
+      initEmbed(LISTEN_ID);
+    } else {
+      renderView();
+      if (LISTEN_ID) {
+        const check = setInterval(() => {
+          const r = state.radios.find(x => x.id === LISTEN_ID);
+          if (r) { playRadio(r); clearInterval(check); }
+        }, 300);
+      }
+    }
+    renderIcons();
+  </script>
+</body>
+</html>
