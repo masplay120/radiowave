@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RadioWave Player</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: { 500:'#6366f1', 600:'#4f46e5' },
+            surface: { 900:'#0f1115', 950:'#07090c' }
+          }
+        }
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    html, body { 
+      margin: 0; padding: 0; height: 100%; overflow: hidden;
+      font-family: 'Inter', system-ui, sans-serif;
+      background: #07090c;
+    }
+    @keyframes live-pulse { 
+      0%, 100% { opacity: 1; transform: scale(1); } 
+      50% { opacity: .4; transform: scale(.85); } 
+    }
+    .live-dot { 
+      width: 6px; height: 6px; border-radius: 9999px; 
+      background: #ef4444; box-shadow: 0 0 8px #ef4444;
+      animation: live-pulse 1.2s ease-in-out infinite; 
+    }
+    input[type="range"].range-vol { 
+      -webkit-appearance: none; height: 3px; border-radius: 9999px; 
+      background: #374151; outline: none;
+    }
+    input[type="range"].range-vol::-webkit-slider-thumb { 
+      -webkit-appearance: none; width: 12px; height: 12px; 
+      border-radius: 9999px; background: #6366f1; 
+      cursor: pointer; border: 2px solid #fff; 
+    }
+    .watermark-link {
+      color: #64748b;
+      text-decoration: none;
+      font-size: 10px;
+      transition: color 0.2s;
+    }
+    .watermark-link:hover {
+      color: #6366f1;
+    }
+    .error-state {
+      background: linear-gradient(135deg, #7f1d1d, #991b1b);
+    }
+  </style>
+</head>
+<body>
+  <div id="player-container" class="h-full w-full flex items-center gap-2 px-3 bg-gradient-to-r from-surface-900 via-surface-950 to-surface-900 border border-white/10">
+    
+    <!-- Logo -->
+    <div class="shrink-0 w-16 h-16 rounded-lg bg-white/5 grid place-items-center overflow-hidden ring-1 ring-white/10">
+      <img id="radioLogo" src="" alt="" class="w-full h-full object-cover hidden" />
+      <svg id="defaultIcon" class="w-8 h-8 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+      </svg>
+    </div>
+
+    <!-- Info + Marca de agua (inyectada dinámicamente) -->
+    <div class="min-w-0 flex-1">
+      <a id="radioName" href="#" target="_blank" rel="noopener" class="block font-semibold text-sm truncate hover:text-brand-500 transition text-white">—</a>
+      <p id="radioSong" class="text-xs text-slate-300 truncate">Cargando...</p>
+      <div id="watermarkContainer" class="mt-0.5"></div>
+    </div>
+
+    <!-- Controles -->
+    <div class="flex items-center gap-2 shrink-0">
+      <button id="playBtn" class="w-10 h-10 rounded-full bg-brand-500 hover:bg-brand-600 grid place-items-center shadow-lg shadow-brand-500/30 transition">
+        <svg id="playIcon" class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M8 5v14l11-7z"/>
+        </svg>
+      </button>
+      <button id="muteBtn" class="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 grid place-items-center transition">
+        <svg id="muteIcon" class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+        </svg>
+      </button>
+      <input id="volumeSlider" type="range" min="0" max="1" step="0.01" value="0.8" class="range-vol w-16 hidden sm:block" />
+    </div>
+  </div>
+
+  <!-- Estado de error (oculto por defecto) -->
+  <div id="errorState" class="hidden fixed inset-0 error-state grid place-items-center p-4">
+    <div class="text-center">
+      <svg class="w-12 h-12 text-white mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+      </svg>
+      <p class="text-white font-semibold text-sm">Error: Reproductor no autorizado</p>
+      <p class="text-white/70 text-xs mt-1">Este reproductor ha sido modificado o manipulado.</p>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    // Configuración Firebase (debe coincidir con index.html)
+    const firebaseConfig = {
+      apiKey: "AIzaSyB3d6Tbek0a-cN831rjt-rOwMn3oZteM7o",
+      authDomain: "radiowave-1c842.firebaseapp.com",
+      projectId: "radiowave-1c842",
+      storageBucket: "radiowave-1c842.firebasestorage.app",
+      messagingSenderId: "432575974008",
+      appId: "1:432575974008:web:c90af5206c0a8045193b8d"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Parámetros URL
+    const params = new URLSearchParams(location.search);
+    const RADIO_ID = params.get('listen');
+    const IS_EMBED = params.get('embed') === '1';
+
+    if (!RADIO_ID) {
+      showError('ID de radio no especificado');
+      throw new Error('Missing radio ID');
+    }
+
+    // Estado del reproductor
+    const audio = new Audio();
+    audio.preload = 'metadata';
+    let radioData = null;
+    let metadataInterval = null;
+    let integrityCheckInterval = null;
+    let watermarkValid = true;
+
+    // Elementos DOM
+    const els = {
+      container: document.getElementById('player-container'),
+      logo: document.getElementById('radioLogo'),
+      defaultIcon: document.getElementById('defaultIcon'),
+      name: document.getElementById('radioName'),
+      song: document.getElementById('radioSong'),
+      watermark: document.getElementById('watermarkContainer'),
+      playBtn: document.getElementById('playBtn'),
+      playIcon: document.getElementById('playIcon'),
+      muteBtn: document.getElementById('muteBtn'),
+      muteIcon: document.getElementById('muteIcon'),
+      volume: document.getElementById('volumeSlider'),
+      errorState: document.getElementById('errorState')
+    };
+
+    // Cargar datos de la radio
+    async function loadRadio() {
+      try {
+        const docRef = doc(db, 'radios', RADIO_ID);
+        const snap = await getDoc(docRef);
+        
+        if (!snap.exists()) {
+          showError('Radio no encontrada');
+          return;
+        }
+
+        radioData = { id: snap.id, ...snap.data() };
+        renderRadio();
+        startMetadataPolling();
+        startIntegrityCheck();
+      } catch (err) {
+        console.error('Error loading radio:', err);
+        showError('Error al cargar la radio');
+      }
+    }
+
+    // Renderizar datos de la radio
+    function renderRadio() {
+      if (!radioData) return;
+
+      // Logo
+      if (radioData.logoUrl) {
+        els.logo.src = radioData.logoUrl;
+        els.logo.classList.remove('hidden');
+        els.defaultIcon.classList.add('hidden');
+      }
+
+      // Nombre con enlace al portal
+      const portalUrl = `${location.origin}/?listen=${RADIO_ID}`;
+      els.name.textContent = radioData.name || 'Radio';
+      els.name.href = portalUrl;
+
+      // Inyectar marca de agua dinámicamente
+      injectWatermark(portalUrl);
+
+      // Audio source
+      audio.src = radioData.streamUrl;
+      els.song.textContent = 'Transmisión en vivo';
+    }
+
+    // INYECCIÓN DINÁMICA DE MARCA DE AGUA (no está en HTML estático)
+    function injectWatermark(portalUrl) {
+      const watermark = document.createElement('a');
+      watermark.href = portalUrl;
+      watermark.target = '_blank';
+      watermark.rel = 'noopener';
+      watermark.className = 'watermark-link inline-flex items-center gap-1';
+      watermark.setAttribute('data-watermark', 'true');
+      watermark.innerHTML = `
+        <span class="live-dot"></span>
+        <span>Powered by RadioWave</span>
+      `;
+      els.watermark.appendChild(watermark);
+    }
+
+    // VERIFICACIÓN DE INTEGRIDAD (anti-manipulación)
+    function startIntegrityCheck() {
+      const watermarkEl = els.watermark.querySelector('[data-watermark]');
+      if (!watermarkEl) return;
+
+      const originalHref = watermarkEl.href;
+      const originalText = watermarkEl.textContent.trim();
+
+      // MutationObserver para detectar cambios en el DOM
+      const observer = new MutationObserver((mutations) => {
+        for (const mutation of mutations) {
+          if (mutation.type === 'childList' || mutation.type === 'attributes' || mutation.type === 'characterData') {
+            validateWatermark();
+          }
+        }
+      });
+
+      observer.observe(els.watermark, {
+        childList: true,
+        attributes: true,
+        subtree: true,
+        characterData: true,
+        attributeFilter: ['style', 'class', 'href']
+      });
+
+      // Verificación periódica adicional
+      integrityCheckInterval = setInterval(validateWatermark, 2000);
+
+      function validateWatermark() {
+        const wm = els.watermark.querySelector('[data-watermark]');
+        
+        // Validar existencia
+        if (!wm) {
+          destroyPlayer('Marca de agua eliminada');
+          return;
+        }
+
+        // Validar visibilidad
+        const styles = window.getComputedStyle(wm);
+        if (
+          styles.display === 'none' ||
+          styles.visibility === 'hidden' ||
+          parseFloat(styles.opacity) < 0.1 ||
+          wm.offsetWidth === 0 ||
+          wm.offsetHeight === 0
+        ) {
+          destroyPlayer('Marca de agua oculta');
+          return;
+        }
+
+        // Validar contenido
+        if (wm.href !== originalHref || wm.textContent.trim() !== originalText) {
+          destroyPlayer('Marca de agua alterada');
+          return;
+        }
+
+        watermarkValid = true;
+      }
+    }
+
+    // DESTRUCCIÓN DEL REPRODUCTOR
+    function destroyPlayer(reason) {
+      console.warn('Player destroyed:', reason);
+      watermarkValid = false;
+      
+      audio.pause();
+      audio.src = '';
+      
+      if (metadataInterval) clearInterval(metadataInterval);
+      if (integrityCheckInterval) clearInterval(integrityCheckInterval);
+
+      els.container.classList.add('hidden');
+      els.errorState.classList.remove('hidden');
+    }
+
+    // Metadata polling (Icecast/Shoutcast)
+    function startMetadataPolling() {
+      if (!radioData) return;
+
+      const fetchMetadata = async () => {
+        try {
+          const streamUrl = new URL(radioData.streamUrl);
+          const baseUrl = streamUrl.origin + streamUrl.pathname.replace(/\/[^\/]*$/, '');
+          
+          const endpoints = [
+            `${baseUrl}/status-json.xsl`,
+            `${baseUrl}/stats?json=1`,
+            `${baseUrl}/nowplaying`
+          ];
+
+          for (const url of endpoints) {
+            try {
+              const res = await fetch(url, { signal: AbortSignal.timeout(3000) });
+              if (!res.ok) continue;
+              
+              const data = await res.json();
+              const title = parseTitle(data);
+              if (title) {
+                els.song.textContent = title;
+                return;
+              }
+            } catch (e) { continue; }
+          }
+          
+          els.song.textContent = 'Transmisión en vivo';
+        } catch (err) {
+          els.song.textContent = 'Transmisión en vivo';
+        }
+      };
+
+      fetchMetadata();
+      metadataInterval = setInterval(fetchMetadata, 15000);
+    }
+
+    function parseTitle(data) {
+      if (data.icestats?.source) {
+        const src = Array.isArray(data.icestats.source) ? data.icestats.source[0] : data.icestats.source;
+        return src.title || null;
+      }
+      if (data.songtitle) return data.songtitle;
+      if (data.now_playing?.song) {
+        const s = data.now_playing.song;
+        return `${s.artist || ''} - ${s.title || ''}`.trim();
+      }
+      return null;
+    }
+
+    // Controles de audio
+    els.playBtn.addEventListener('click', () => {
+      if (!watermarkValid) return;
+      if (audio.paused) {
+        audio.play().catch(err => {
+          console.warn('Autoplay blocked:', err);
+          els.song.textContent = 'Pulsa ▶ para escuchar';
+        });
+      } else {
+        audio.pause();
+      }
+    });
+
+    els.muteBtn.addEventListener('click', () => {
+      audio.muted = !audio.muted;
+      updateMuteIcon();
+    });
+
+    els.volume.addEventListener('input', (e) => {
+      audio.volume = parseFloat(e.target.value);
+    });
+
+    audio.addEventListener('play', () => {
+      els.playIcon.innerHTML = '<path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>';
+      els.song.textContent = 'Transmisión en vivo';
+    });
+
+    audio.addEventListener('pause', () => {
+      els.playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+    });
+
+    audio.addEventListener('waiting', () => {
+      els.song.textContent = 'Cargando...';
+    });
+
+    audio.addEventListener('error', () => {
+      els.song.textContent = 'Error de conexión';
+    });
+
+    function updateMuteIcon() {
+      if (audio.muted) {
+        els.muteIcon.innerHTML = '<path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>';
+      } else {
+        els.muteIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>';
+      }
+    }
+
+    function showError(msg) {
+      console.error(msg);
+      els.container.classList.add('hidden');
+      els.errorState.classList.remove('hidden');
+    }
+
+    // Inicializar
+    loadRadio();
+  </script>
+</body>
+</html>
