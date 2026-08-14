@@ -36,7 +36,6 @@
                   #07090c;
       min-height: 100vh;
     }
-
     select.input {
       background-color: #0f1115; color: #e2e8f0;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
@@ -45,7 +44,6 @@
     }
     select.input option { background-color: #0f1115 !important; color: #e2e8f0 !important; padding: 8px 12px; }
     select.input option:checked { background-color: #6366f1 !important; color: #ffffff !important; font-weight: 600; }
-
     .genre-chip {
       padding: .4rem .85rem; border-radius: 9999px;
       background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08);
@@ -59,27 +57,20 @@
       box-shadow: 0 4px 12px -2px rgba(99,102,241,.45);
     }
     .genre-chip.selected::before { content: "✓"; font-size: .75rem; font-weight: bold; }
-
     @keyframes live-pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .4; transform: scale(.85); } }
     .live-dot { width: 8px; height: 8px; border-radius: 9999px; background: #ef4444; box-shadow: 0 0 10px #ef4444; animation: live-pulse 1.2s ease-in-out infinite; }
-
     input[type="range"].range-vol { -webkit-appearance: none; height: 4px; border-radius: 9999px; background: #374151; }
     input[type="range"].range-vol::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; border-radius: 9999px; background: #6366f1; cursor: pointer; border: 2px solid #fff; }
-
     @keyframes song-fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
     .song-update { animation: song-fade .4s ease-out; }
-
     @keyframes heart-pop { 0% { transform: scale(1); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
     .heart-pop { animation: heart-pop .35s ease-out; }
-
     .modal-fade { animation: fade .2s ease-out; }
     @keyframes fade { from { opacity: 0; transform: translateY(8px);} to {opacity:1; transform: none;} }
-
     ::-webkit-scrollbar { width: 10px; height: 10px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 10px; }
     ::-webkit-scrollbar-thumb:hover { background: #374151; }
-
     .input {
       width: 100%; padding: .65rem .9rem;
       background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08);
@@ -99,18 +90,10 @@
       border-radius: .75rem; border: 1px solid rgba(255,255,255,.08); transition: .15s;
     }
     .btn-secondary:hover { background: rgba(255,255,255,.08); }
+    .btn-secondary:disabled { opacity: .4; cursor: not-allowed; }
     .nav-btn.active { background: #6366f1; color: white; }
     .nav-btn:not(.active) { color: #cbd5e1; }
     .nav-btn:not(.active):hover { background: rgba(255,255,255,.05); }
-
-    .genre-btn {
-      padding: .5rem 1rem; border-radius: 9999px; font-size: .85rem; font-weight: 500;
-      background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.08);
-      color: #cbd5e1; cursor: pointer; transition: .15s;
-    }
-    .genre-btn:hover { background: rgba(255,255,255,.1); }
-    .genre-btn.selected { background: linear-gradient(135deg, #6366f1, #a855f7); border-color: transparent; color: #ffffff; }
-
     .logo-preview {
       width: 120px; height: 120px; border-radius: 12px;
       background: rgba(255,255,255,.04); border: 2px dashed rgba(255,255,255,.1);
@@ -121,11 +104,9 @@
     .logo-preview.empty { color: #64748b; font-size: .75rem; text-align: center; padding: 1rem; }
     .logo-upload-btn {
       padding: .5rem 1rem; background: rgba(99,102,241,.15); border: 1px solid rgba(99,102,241,.3);
-      border-radius: 8px; color: #818cf8; font-size: .85rem; cursor: pointer; transition: .15s;
-      display: inline-block;
+      border-radius: 8px; color: #818cf8; font-size: .85rem; cursor: pointer; transition: .15s; display: inline-block;
     }
     .logo-upload-btn:hover { background: rgba(99,102,241,.25); }
-
     .social-ico {
       width: 26px; height: 26px; border-radius: 9999px;
       background: rgba(255,255,255,.06); display: grid; place-items: center; transition: .15s;
@@ -151,7 +132,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
         </svg>
         <input id="globalSearch" type="search" placeholder="Buscar emisoras, géneros, países..."
-               class="input !pl-9 !py-2 !text-sm w-full" />
+               class="input !pl-9 !py-2 !text-sm w-full" autocomplete="off" />
       </div>
 
       <nav class="hidden lg:flex items-center gap-1 bg-white/5 rounded-full p-1 border border-white/5">
@@ -174,6 +155,7 @@
 
   <main id="app" class="max-w-7xl mx-auto px-4 lg:px-8 py-8"></main>
 
+  <!-- REPRODUCTOR FLOTANTE -->
   <footer id="audioPlayer" class="fixed bottom-0 inset-x-0 z-50 hidden">
     <div class="max-w-7xl mx-auto px-3 lg:px-8">
       <div class="bg-gradient-to-r from-surface-900 via-surface-900 to-surface-950 border border-white/10 rounded-t-2xl shadow-2xl shadow-black/50 px-4 py-3 flex items-center gap-3">
@@ -234,7 +216,7 @@
       </form>
       <form id="formRegister" class="auth-form space-y-3 hidden">
         <h3 class="text-xl font-bold">Crear cuenta</h3>
-        <p class="text-sm text-slate-400">Elige tu tipo de cuenta. Contacta al administrador si deseas cambiar de rol.</p>
+        <p class="text-sm text-slate-400">Elige tu tipo de cuenta. Contacta al administrador para cambiar de rol.</p>
         <input type="text" name="name" required placeholder="Nombre" class="input">
         <input type="email" name="email" required placeholder="Correo" class="input">
         <input type="password" name="password" required minlength="6" placeholder="Contraseña (mín. 6)" class="input">
@@ -246,7 +228,7 @@
       </form>
       <form id="formRecover" class="auth-form space-y-3 hidden">
         <h3 class="text-xl font-bold">Restablecer contraseña</h3>
-        <p class="text-sm text-slate-400">Te enviaremos un enlace seguro a tu correo para crear una nueva contraseña.</p>
+        <p class="text-sm text-slate-400">Te enviaremos un enlace seguro a tu correo.</p>
         <input type="email" name="email" required placeholder="Tu correo registrado" class="input" id="recEmail">
         <button class="btn-primary w-full">Enviar enlace de recuperación</button>
       </form>
@@ -267,7 +249,6 @@
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
       </div>
-
       <div class="grid grid-cols-5 gap-3 mb-6">
         <button data-share="whatsapp" class="share-btn aspect-square rounded-xl bg-white/5 hover:bg-green-500/20 grid place-items-center" title="WhatsApp">
           <svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
@@ -285,7 +266,6 @@
           <svg class="w-5 h-5 text-brand-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
         </button>
       </div>
-
       <div class="border-t border-white/5 pt-4 space-y-4">
         <div>
           <h4 class="text-sm font-semibold mb-2 flex items-center gap-2">
@@ -298,11 +278,10 @@
             Copiar código
           </button>
         </div>
-
         <div>
           <h4 class="text-sm font-semibold mb-2 flex items-center gap-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-            Vista previa (así se verá en otros sitios)
+            Vista previa
           </h4>
           <div id="embedPreview" class="bg-black/40 border border-white/10 rounded-lg p-2" style="min-height: 130px;"></div>
         </div>
@@ -327,7 +306,6 @@
         <input type="hidden" name="existingLogoUrl">
         <div class="md:col-span-2"><label>Nombre *</label><input name="name" required class="input"></div>
         <div class="md:col-span-2"><label>URL del Stream *</label><input name="streamUrl" required placeholder="https://.../stream.mp3" class="input"></div>
-
         <div class="md:col-span-2">
           <label>Logo / Cover</label>
           <div class="flex items-center gap-4 p-3 bg-black/30 rounded-xl border border-white/5">
@@ -338,25 +316,22 @@
                 <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
                 Elegir imagen
               </label>
-              <p class="text-xs text-slate-500 mt-2">Se comprime a 200×200 y se guarda en Firestore (plan gratis).</p>
+              <p class="text-xs text-slate-500 mt-2">Se comprime a 200×200 (calidad 0.5) y se guarda en Firestore — plan gratis.</p>
               <p id="logoStatus" class="text-xs text-slate-400 mt-1"></p>
             </div>
           </div>
         </div>
-
         <div class="md:col-span-2">
           <label>Géneros / Categorías * <span class="text-brand-400">(mínimo 3)</span></label>
           <div id="genreChips" class="flex flex-wrap gap-2 p-3 bg-black/30 rounded-xl border border-white/5"></div>
           <p id="genreError" class="hidden text-xs text-red-400 mt-2">⚠ Debes seleccionar al menos 3 géneros.</p>
         </div>
-
         <div><label>País *</label><input name="country" required class="input"></div>
         <div><label>Ciudad</label><input name="city" class="input"></div>
         <div><label>Web</label><input name="webUrl" placeholder="https://..." class="input"></div>
         <div><label>Facebook</label><input name="facebook" placeholder="https://facebook.com/..." class="input"></div>
         <div><label>Instagram</label><input name="instagram" placeholder="https://instagram.com/..." class="input"></div>
         <div class="md:col-span-2"><label>Twitter / X</label><input name="twitter" placeholder="https://x.com/..." class="input"></div>
-
         <div class="md:col-span-2 flex gap-2 pt-2">
           <button type="button" onclick="window.closeRadioModal()" class="btn-secondary flex-1">Cancelar</button>
           <button type="submit" id="btnSaveRadio" class="btn-primary flex-1">Guardar emisora</button>
@@ -385,11 +360,9 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // 🔧 RUTA BASE DETECTADA AUTOMÁTICAMENTE (soporta subcarpetas)
     const BASE_PATH = location.pathname.replace(/\/[^\/]*$/, '/');
-    console.log('📁 Ruta base detectada:', BASE_PATH);
-
     const DEFAULT_BANNER_URL = "https://image.jimcdn.com/app/cms/image/transf/dimension=2301x/path/sc40a039d49acf98a/backgroundarea/i2f02cd984ea6c9de/version/1625686183/image.jpg";
+    const PAGE_SIZE = 20; // ⚡ Paginación: máx 20 radios renderizadas por página
 
     const GENRES = ['Pop','Rock','Reggaetón','Salsa','Electrónica','Clásica','Jazz','Noticias','Deportes','Country','Urbana','Religiosa','Tropical','Baladas','Cumbia','Bachata','Merengue','Metal','Indie','Hip-Hop','R&B','Folk','Latina','K-Pop','Infantil','Cultura','Variada'];
 
@@ -397,7 +370,11 @@
       user: null, userData: null,
       radios: [], myRadios: [], favorites: [],
       currentRadio: null, currentView: 'home',
-      currentGenre: null, globalSearch: '',
+      globalSearch: '',
+      // ⚡ Nuevos estados de escalado
+      viewMode: localStorage.getItem('rw_view') || 'grid',
+      page: 1,
+      filterGenre: '', filterCountry: '', filterCity: '',
       selectedGenres: [], metadataInterval: null, lastSong: null,
       selectedLogoFile: null
     };
@@ -406,9 +383,12 @@
     const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
     const appEl = $('#app');
 
-    // ============================================================
-    // HELPERS
-    // ============================================================
+    // ⚡ Debounce (300ms) para búsqueda
+    function debounce(fn, ms = 300) {
+      let t;
+      return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
+    }
+
     function showToast(msg, type = 'success') {
       const t = $('#toast');
       t.className = `fixed top-20 right-4 z-[70] px-4 py-3 rounded-xl shadow-lg text-sm font-medium modal-fade ${type === 'error' ? 'bg-red-500/90 text-white' : type === 'info' ? 'bg-blue-500/90 text-white' : 'bg-green-500/90 text-white'}`;
@@ -429,14 +409,11 @@
     function formatGenres(g) { return normalizeGenres(g).join(' · '); }
     function isFavorite(radioId) { return state.favorites.some(f => f.radioId === radioId || f.id === radioId); }
 
-    // 🔒 VALIDACIÓN DE URL SEGURA (bloquea javascript:, data:, vbscript:)
     function fixUrl(u) {
       if (!u) return '';
-      const trimmed = String(u).trim();
-      if (/^https?:\/\//i.test(trimmed)) return trimmed;
-      if (/^[a-z0-9][a-z0-9.-]+\.[a-z]{2,}(\/.*)?$/i.test(trimmed)) {
-        return 'https://' + trimmed;
-      }
+      const t = String(u).trim();
+      if (/^https?:\/\//i.test(t)) return t;
+      if (/^[a-z0-9][a-z0-9.-]+\.[a-z]{2,}(\/.*)?$/i.test(t)) return 'https://' + t;
       return '';
     }
 
@@ -447,14 +424,14 @@
       twitter: '<svg fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>'
     };
 
-    function socialLinks(r) {
+    function socialLinks(r, wrapCls = 'flex gap-1.5 mt-2') {
       const items = [];
       if (r.webUrl)    items.push(['globe',     r.webUrl,    'Sitio web']);
       if (r.facebook)  items.push(['facebook',  r.facebook,  'Facebook']);
       if (r.instagram) items.push(['instagram', r.instagram, 'Instagram']);
       if (r.twitter)   items.push(['twitter',   r.twitter,   'X / Twitter']);
       if (!items.length) return '';
-      return `<div class="flex gap-1.5 mt-2">${items.map(([ic, url, title]) =>
+      return `<div class="${wrapCls}">${items.map(([ic, url, title]) =>
         `<a href="${escapeHtml(fixUrl(url))}" target="_blank" rel="noopener" title="${title}" class="social-ico text-slate-300 hover:text-white">${SOCIAL_ICONS[ic]}</a>`
       ).join('')}</div>`;
     }
@@ -462,6 +439,33 @@
     function liveUrl(url) {
       const sep = url.includes('?') ? '&' : '?';
       return `${url}${sep}t=${Date.now()}`;
+    }
+
+    // ============================================================
+    // ⚡ DATOS DERIVADOS PARA FILTROS (únicos y ordenados)
+    // ============================================================
+    function allGenres() { return [...new Set(state.radios.flatMap(r => normalizeGenres(r.genre)))].sort((a,b)=>a.localeCompare(b)); }
+    function allCountries() { return [...new Set(state.radios.map(r => (r.country||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b)); }
+    function allCities() {
+      const src = state.filterCountry ? state.radios.filter(r => (r.country||'').trim() === state.filterCountry) : state.radios;
+      return [...new Set(src.map(r => (r.city||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+    }
+
+    // ⚡ PIPELINE DE FILTRADO (cliente, acotado por paginación)
+    function getFilteredRadios() {
+      let list = state.radios;
+      const q = norm(state.globalSearch.trim());
+      if (q) list = list.filter(r =>
+        norm(r.name).includes(q) ||
+        normalizeGenres(r.genre).some(g => norm(g).includes(q)) ||
+        norm(r.country||'').includes(q) ||
+        norm(r.city||'').includes(q)
+      );
+      if (state.filterGenre)   list = list.filter(r => normalizeGenres(r.genre).includes(state.filterGenre));
+      if (state.filterCountry) list = list.filter(r => (r.country||'').trim() === state.filterCountry);
+      if (state.filterCity)    list = list.filter(r => (r.city||'').trim() === state.filterCity);
+      // Destacadas primero
+      return [...list.filter(r => r.featured === true), ...list.filter(r => r.featured !== true)];
     }
 
     // ============================================================
@@ -473,13 +477,9 @@
         try {
           const snap = await getDoc(doc(db, 'users', user.uid));
           state.userData = snap.exists() ? snap.data() : null;
-          console.log('👤 Usuario cargado:', state.userData);
           listenFavorites();
           listenMyRadios();
-        } catch (err) {
-          console.error('❌ Error cargando usuario:', err);
-          showToast('Error al cargar datos: ' + err.message, 'error');
-        }
+        } catch (err) { showToast('Error al cargar datos: ' + err.message, 'error'); }
       } else {
         state.userData = null; state.favorites = []; state.myRadios = [];
       }
@@ -495,9 +495,7 @@
         const isOwner = state.userData?.role === 'owner';
         el.innerHTML = `
           <div class="flex items-center gap-2 bg-white/5 border border-white/10 rounded-full pl-1 pr-3 py-1">
-            <div class="w-8 h-8 rounded-full ${isOwner ? 'bg-gradient-to-br from-amber-500 to-orange-600' : 'bg-gradient-to-br from-brand-500 to-purple-600'} grid place-items-center text-white text-xs font-bold">
-              ${isOwner ? '👑' : initial}
-            </div>
+            <div class="w-8 h-8 rounded-full ${isOwner ? 'bg-gradient-to-br from-amber-500 to-orange-600' : 'bg-gradient-to-br from-brand-500 to-purple-600'} grid place-items-center text-white text-xs font-bold">${isOwner ? '👑' : initial}</div>
             <span class="text-sm font-medium hidden md:block">${escapeHtml(state.userData?.name || state.user.email)}</span>
           </div>
           <button onclick="window.doLogout()" class="w-9 h-9 rounded-full bg-white/5 hover:bg-red-500/20 hover:text-red-400 grid place-items-center transition" title="Cerrar sesión">
@@ -519,89 +517,64 @@
       $(`#form${tab[0].toUpperCase()+tab.slice(1)}`).classList.remove('hidden');
     };
     window.closeAuth = () => $('#authModal').classList.add('hidden');
-    window.doLogout = async () => {
-      try { await signOut(auth); showToast('Sesión cerrada', 'info'); }
-      catch (err) { showToast('Error al salir: ' + err.message, 'error'); }
-    };
+    window.doLogout = async () => { try { await signOut(auth); showToast('Sesión cerrada', 'info'); } catch (e) {} };
 
     $$('.auth-tab').forEach(t => t.addEventListener('click', () => window.openAuth(t.dataset.authTab)));
 
     $('#formLogin').addEventListener('submit', async (e) => {
       e.preventDefault();
       const { email, password } = Object.fromEntries(new FormData(e.target));
-      try {
-        await signInWithEmailAndPassword(auth, email, password);
-        window.closeAuth(); showToast('¡Bienvenido/a!');
-      } catch (err) { showAuthError(traducirError(err.code)); }
+      try { await signInWithEmailAndPassword(auth, email, password); window.closeAuth(); showToast('¡Bienvenido/a!'); }
+      catch (err) { showAuthError(traducirError(err.code)); }
     });
 
-    // 🔒 REGISTRO: solo permite listener o broadcaster (nunca owner)
     $('#formRegister').addEventListener('submit', async (e) => {
       e.preventDefault();
       const d = Object.fromEntries(new FormData(e.target));
-      
-      if (!['listener', 'broadcaster'].includes(d.role)) {
-        showAuthError('Rol inválido');
-        return;
-      }
-      
+      if (!['listener','broadcaster'].includes(d.role)) { showAuthError('Rol inválido'); return; }
       try {
         const cred = await createUserWithEmailAndPassword(auth, d.email, d.password);
         await setDoc(doc(db, 'users', cred.user.uid), {
-          name: String(d.name).slice(0, 100),
-          email: d.email,
-          role: d.role,
-          createdAt: serverTimestamp()
+          name: String(d.name).slice(0,100), email: d.email, role: d.role, createdAt: serverTimestamp()
         });
         window.closeAuth(); showToast('¡Cuenta creada exitosamente!');
       } catch (err) { showAuthError(traducirError(err.code)); }
     });
 
-    // 🔒 RECUPERACIÓN: usa flujo nativo seguro de Firebase Auth
     $('#formRecover').addEventListener('submit', async (e) => {
       e.preventDefault();
       const email = $('#recEmail').value.trim();
-      try {
-        await sendPasswordResetEmail(auth, email);
-      } catch (err) {
-        // Mensaje genérico para no revelar si el email existe
-      }
+      try { await sendPasswordResetEmail(auth, email); } catch (err) {}
       showAuthSuccess('✅ Si el correo está registrado, recibirás un enlace para restablecer tu contraseña.');
       e.target.reset();
     });
 
-    function showAuthError(msg) { $('#authError').textContent = msg; $('#authError').classList.remove('hidden'); $('#authSuccess').classList.add('hidden'); }
-    function showAuthSuccess(msg) { $('#authSuccess').textContent = msg; $('#authSuccess').classList.remove('hidden'); $('#authError').classList.add('hidden'); }
-    function traducirError(code) {
-      const map = {
-        'auth/invalid-email': 'Correo inválido.', 'auth/user-not-found': 'Usuario no encontrado.',
-        'auth/wrong-password': 'Contraseña incorrecta.', 'auth/email-already-in-use': 'Ese correo ya está registrado.',
-        'auth/weak-password': 'Contraseña muy débil (mínimo 6 caracteres).', 'auth/invalid-credential': 'Credenciales inválidas.'
-      };
+    function showAuthError(m){ $('#authError').textContent=m; $('#authError').classList.remove('hidden'); $('#authSuccess').classList.add('hidden'); }
+    function showAuthSuccess(m){ $('#authSuccess').textContent=m; $('#authSuccess').classList.remove('hidden'); $('#authError').classList.add('hidden'); }
+    function traducirError(code){
+      const map = { 'auth/invalid-email':'Correo inválido.','auth/user-not-found':'Usuario no encontrado.','auth/wrong-password':'Contraseña incorrecta.','auth/email-already-in-use':'Ese correo ya está registrado.','auth/weak-password':'Contraseña muy débil.','auth/invalid-credential':'Credenciales inválidas.' };
       return map[code] || 'Error: ' + code;
     }
 
     // ============================================================
-    // FIRESTORE LISTENERS
+    // LISTENERS FIRESTORE
     // ============================================================
     onSnapshot(query(collection(db, 'radios'), orderBy('createdAt', 'desc')), (snap) => {
       state.radios = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       renderView();
       updatePlayerFavButton();
-    }, (err) => { console.error('❌ Error radios:', err); showToast('Error al cargar emisoras: ' + err.message, 'error'); });
+    }, (err) => showToast('Error al cargar emisoras: ' + err.message, 'error'));
 
     function listenMyRadios() {
       if (!state.user) return;
       if (window._myRadiosUnsub) window._myRadiosUnsub();
-      
       const q = state.userData?.role === 'owner'
         ? query(collection(db, 'radios'))
         : query(collection(db, 'radios'), where('ownerId', '==', state.user.uid));
-      
       window._myRadiosUnsub = onSnapshot(q, (snap) => {
         state.myRadios = snap.docs.map(d => ({ id: d.id, ...d.data() }));
         if (state.currentView === 'dashboard') renderView();
-      }, (err) => { console.error('❌ Error mis radios:', err); });
+      }, () => {});
     }
 
     function listenFavorites() {
@@ -611,7 +584,7 @@
         state.favorites = snap.docs.map(d => ({ id: d.id, ...d.data() }));
         renderView();
         updatePlayerFavButton();
-      }, (err) => { console.error('❌ Error favoritos:', err); });
+      }, () => {});
     }
 
     async function toggleFavorite(radio) {
@@ -620,105 +593,75 @@
       try {
         const ref = doc(db, 'users', state.user.uid, 'favorites', radio.id);
         const snap = await getDoc(ref);
-        if (snap.exists()) {
-          await deleteDoc(ref);
-          showToast('Quitado de favoritos', 'info');
-        } else {
-          await setDoc(ref, {
-            radioId: radio.id, name: radio.name, logoUrl: radio.logoUrl || '',
-            genre: normalizeGenres(radio.genre), streamUrl: radio.streamUrl, savedAt: serverTimestamp()
-          });
+        if (snap.exists()) { await deleteDoc(ref); showToast('Quitado de favoritos', 'info'); }
+        else {
+          await setDoc(ref, { radioId: radio.id, name: radio.name, logoUrl: radio.logoUrl || '', genre: normalizeGenres(radio.genre), streamUrl: radio.streamUrl, savedAt: serverTimestamp() });
           showToast('Añadido a favoritos ❤️');
         }
       } catch (err) { showToast('Error: ' + err.message, 'error'); }
     }
 
     // ============================================================
-    // COMPRESIÓN DE LOGO
+    // LOGO (compresión)
     // ============================================================
     function fileToImage(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = e => {
-          const img = new Image();
-          img.onload = () => resolve(img);
-          img.onerror = () => reject(new Error('Imagen inválida'));
-          img.src = e.target.result;
-        };
-        reader.onerror = () => reject(new Error('No se pudo leer'));
-        reader.readAsDataURL(file);
+      return new Promise((res, rej) => {
+        const r = new FileReader();
+        r.onload = e => { const i = new Image(); i.onload = () => res(i); i.onerror = () => rej(new Error('Imagen inválida')); i.src = e.target.result; };
+        r.onerror = () => rej(new Error('No se pudo leer'));
+        r.readAsDataURL(file);
       });
     }
-
-    function drawScaled(img, maxSize) {
+    function drawScaled(img, max) {
       let w = img.width, h = img.height;
-      if (w > h) { if (w > maxSize) { h = Math.round(h * maxSize / w); w = maxSize; } }
-      else       { if (h > maxSize) { w = Math.round(w * maxSize / h); h = maxSize; } }
-      const canvas = document.createElement('canvas');
-      canvas.width = w; canvas.height = h;
-      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-      return canvas;
+      if (w > h) { if (w > max) { h = Math.round(h*max/w); w = max; } }
+      else { if (h > max) { w = Math.round(w*max/h); h = max; } }
+      const c = document.createElement('canvas'); c.width = w; c.height = h;
+      c.getContext('2d').drawImage(img, 0, 0, w, h);
+      return c;
     }
-
     async function compressToDataURL(file) {
       const img = await fileToImage(file);
-      const levels = [ { size: 200, q: 0.5 }, { size: 160, q: 0.45 }, { size: 140, q: 0.4 } ];
+      const levels = [ {size:200,q:0.5},{size:160,q:0.45},{size:140,q:0.4} ];
       let last = null;
       for (const lv of levels) {
-        const canvas = drawScaled(img, lv.size);
-        let dataUrl = canvas.toDataURL('image/webp', lv.q);
-        if (!dataUrl.startsWith('data:image/webp')) dataUrl = canvas.toDataURL('image/jpeg', lv.q);
-        last = dataUrl;
-        if (dataUrl.length / 1024 <= 150) return dataUrl;
+        const c = drawScaled(img, lv.size);
+        let d = c.toDataURL('image/webp', lv.q);
+        if (!d.startsWith('data:image/webp')) d = c.toDataURL('image/jpeg', lv.q);
+        last = d;
+        if (d.length/1024 <= 150) return d;
       }
-      if (last.length / 1024 > 900) throw new Error('Imagen demasiado pesada');
+      if (last.length/1024 > 900) throw new Error('Imagen demasiado pesada');
       return last;
     }
 
     // ============================================================
-    // 🔒 GUARDAR / ELIMINAR RADIO (preserva ownerId en edición)
+    // GUARDAR / ELIMINAR RADIO
     // ============================================================
     async function saveRadio(data) {
       if (!auth.currentUser) throw new Error('Debes iniciar sesión');
-      
       const isEdit = !!data.id;
       const radioId = data.id || doc(collection(db, 'radios')).id;
-      
       let logoUrl = data.existingLogoUrl || '';
-      if (state.selectedLogoFile) {
-        logoUrl = await compressToDataURL(state.selectedLogoFile);
-      }
-      
-      const safeUrls = {
-        streamUrl: fixUrl(data.streamUrl),
-        webUrl: fixUrl(data.webUrl || ''),
-        facebook: fixUrl(data.facebook || ''),
-        instagram: fixUrl(data.instagram || ''),
-        twitter: fixUrl(data.twitter || '')
+      if (state.selectedLogoFile) logoUrl = await compressToDataURL(state.selectedLogoFile);
+      const safe = {
+        streamUrl: fixUrl(data.streamUrl), webUrl: fixUrl(data.webUrl||''),
+        facebook: fixUrl(data.facebook||''), instagram: fixUrl(data.instagram||''), twitter: fixUrl(data.twitter||'')
       };
-      if (!safeUrls.streamUrl) throw new Error('URL del stream inválida');
-      
+      if (!safe.streamUrl) throw new Error('URL del stream inválida');
       const payload = {
-        name: String(data.name || '').slice(0, 100),
-        streamUrl: safeUrls.streamUrl,
-        logoUrl,
-        bannerUrl: DEFAULT_BANNER_URL,
-        genre: data.genre,
-        country: String(data.country || '').slice(0, 60),
-        city: String(data.city || '').slice(0, 60),
-        webUrl: safeUrls.webUrl,
-        facebook: safeUrls.facebook,
-        instagram: safeUrls.instagram,
-        twitter: safeUrls.twitter,
+        name: String(data.name||'').slice(0,100), streamUrl: safe.streamUrl, logoUrl,
+        bannerUrl: DEFAULT_BANNER_URL, genre: data.genre,
+        country: String(data.country||'').slice(0,60), city: String(data.city||'').slice(0,60),
+        webUrl: safe.webUrl, facebook: safe.facebook, instagram: safe.instagram, twitter: safe.twitter,
         updatedAt: serverTimestamp()
       };
-      
       if (isEdit) {
-        // ⚠️ NO enviar ownerId en edición — las reglas verifican que no cambie
         await updateDoc(doc(db, 'radios', data.id), payload);
       } else {
         payload.ownerId = auth.currentUser.uid;
         payload.ownerName = state.userData?.name || '';
+        payload.featured = false;
         payload.createdAt = serverTimestamp();
         await setDoc(doc(db, 'radios', radioId), payload);
       }
@@ -726,50 +669,34 @@
 
     async function deleteRadio(id) {
       if (!confirm('¿Estás seguro de eliminar esta radio?')) return;
-      try {
-        await deleteDoc(doc(db, 'radios', id));
-        showToast('Emisora eliminada correctamente');
-      } catch (err) { showToast('Error al eliminar: ' + err.message, 'error'); }
+      try { await deleteDoc(doc(db, 'radios', id)); showToast('Emisora eliminada correctamente'); }
+      catch (err) { showToast('Error al eliminar: ' + err.message, 'error'); }
     }
 
     // ============================================================
-    // METADATA SERVICE
+    // METADATA
     // ============================================================
     const MetadataService = {
-      getBaseUrl(streamUrl) {
-        try {
-          const url = new URL(streamUrl);
-          return url.origin + url.pathname.replace(/\/[^\/]*\.[a-z0-9]+$/i, '').replace(/\/$/, '');
-        } catch { return null; }
-      },
-      async fetch(streamUrl) {
-        const base = this.getBaseUrl(streamUrl);
-        if (!base) return null;
-        const endpoints = [`${base}/status-json.xsl`, `${base}/stats?json=1`, `${base}/statistics?json=1`, `${base}/api/live/info`, `${base}/nowplaying`];
-        for (const url of endpoints) {
-          try {
-            const res = await fetch(url, { mode: 'cors', signal: AbortSignal.timeout(4000) });
-            if (!res.ok) continue;
-            const parsed = this.parse(await res.json());
-            if (parsed) return parsed;
-          } catch (e) {}
+      getBaseUrl(u){ try { const url = new URL(u); return url.origin + url.pathname.replace(/\/[^\/]*\.[a-z0-9]+$/i,'').replace(/\/$/,''); } catch { return null; } },
+      async fetch(u){
+        const b = this.getBaseUrl(u); if (!b) return null;
+        const eps = [`${b}/status-json.xsl`,`${b}/stats?json=1`,`${b}/statistics?json=1`,`${b}/api/live/info`,`${b}/nowplaying`];
+        for (const url of eps) {
+          try { const r = await fetch(url, {mode:'cors', signal: AbortSignal.timeout(4000)}); if (!r.ok) continue; const p = this.parse(await r.json()); if (p) return p; } catch(e){}
         }
         return null;
       },
-      parse(data) {
-        if (!data) return null;
-        if (data.icestats?.source) {
-          const sources = Array.isArray(data.icestats.source) ? data.icestats.source : [data.icestats.source];
-          for (const src of sources) if (src.title) return { title: src.artist ? `${src.artist} - ${src.title}` : src.title };
-        }
-        if (data.songtitle || data.title) return { title: data.songtitle || data.title };
-        if (data.now_playing?.song) { const s = data.now_playing.song; return { title: `${s.artist || ''} - ${s.title || ''}`.trim() }; }
+      parse(d){
+        if (!d) return null;
+        if (d.icestats?.source) { const s = Array.isArray(d.icestats.source)?d.icestats.source:[d.icestats.source]; for (const x of s) if (x.title) return {title: x.artist?`${x.artist} - ${x.title}`:x.title}; }
+        if (d.songtitle||d.title) return {title: d.songtitle||d.title};
+        if (d.now_playing?.song) { const s=d.now_playing.song; return {title:`${s.artist||''} - ${s.title||''}`.trim()}; }
         return null;
       }
     };
 
     // ============================================================
-    // AUDIO PLAYER
+    // PLAYER
     // ============================================================
     const audio = new Audio();
     audio.preload = 'none';
@@ -777,53 +704,29 @@
     audio.volume = savedVol !== null ? parseFloat(savedVol) : 0.8;
     let reconnectTimer = null;
 
-    function syncVolume(v) {
-      audio.volume = v;
-      localStorage.setItem('rw_volume', String(v));
-      $('#volSlider').value = v;
-    }
+    function syncVolume(v){ audio.volume=v; localStorage.setItem('rw_volume', String(v)); $('#volSlider').value=v; }
+    function setPlayIcon(p){ $('#btnPlayIcon').innerHTML = p ? '<path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>' : '<path d="M8 5v14l11-7z"/>'; }
+    function setMuteIcon(){ $('#btnMuteIcon').innerHTML = audio.muted ? '<path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>' : '<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>'; }
+    function setStatus(m){ $('#pStatus').textContent = m; }
 
-    function setPlayIcon(playing) {
-      $('#btnPlayIcon').innerHTML = playing
-        ? '<path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>'
-        : '<path d="M8 5v14l11-7z"/>';
-    }
-
-    function setMuteIcon() {
-      $('#btnMuteIcon').innerHTML = audio.muted
-        ? '<path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>'
-        : '<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>';
-    }
-
-    function setStatus(msg) { $('#pStatus').textContent = msg; }
-
-    function updateSongDisplay(text) {
-      const clean = (text || 'Transmisión en vivo').trim();
+    function updateSongDisplay(t){
+      const clean = (t||'Transmisión en vivo').trim();
       if (clean === state.lastSong) return;
       state.lastSong = clean;
-      const el = $('#pSong');
-      if (!el) return;
-      el.classList.remove('song-update');
-      void el.offsetWidth;
-      el.textContent = clean;
-      el.classList.add('song-update');
+      const el = $('#pSong'); if (!el) return;
+      el.classList.remove('song-update'); void el.offsetWidth; el.textContent = clean; el.classList.add('song-update');
     }
 
-    function startMetadataPolling() {
+    function startMetadataPolling(){
       stopMetadataPolling();
       if (!state.currentRadio) return;
-      const poll = async () => {
-        try {
-          const meta = await MetadataService.fetch(state.currentRadio.streamUrl);
-          updateSongDisplay(meta?.title || 'Transmisión en vivo');
-        } catch { updateSongDisplay('Transmisión en vivo'); }
-      };
+      const poll = async () => { try { const m = await MetadataService.fetch(state.currentRadio.streamUrl); updateSongDisplay(m?.title || 'Transmisión en vivo'); } catch { updateSongDisplay('Transmisión en vivo'); } };
       poll();
       state.metadataInterval = setInterval(poll, 15000);
     }
-    function stopMetadataPolling() { if (state.metadataInterval) { clearInterval(state.metadataInterval); state.metadataInterval = null; } }
+    function stopMetadataPolling(){ if (state.metadataInterval) { clearInterval(state.metadataInterval); state.metadataInterval = null; } }
 
-    function playRadio(radio) {
+    function playRadio(radio){
       if (!radio) return;
       if (state.currentRadio?.id === radio.id && !audio.paused) { audio.pause(); return; }
       state.currentRadio = radio;
@@ -833,16 +736,10 @@
       updatePlayerUI();
       startMetadataPolling();
     }
+    function resumeLive(){ if (!state.currentRadio) return; audio.src = liveUrl(state.currentRadio.streamUrl); audio.play().catch(() => setStatus('Error al reproducir')); }
 
-    function resumeLive() {
-      if (!state.currentRadio) return;
-      audio.src = liveUrl(state.currentRadio.streamUrl);
-      audio.play().catch(() => setStatus('Error al reproducir'));
-    }
-
-    function updatePlayerUI() {
-      const r = state.currentRadio;
-      if (!r) return;
+    function updatePlayerUI(){
+      const r = state.currentRadio; if (!r) return;
       $('#pName').textContent = r.name || 'Radio';
       $('#pGenre').textContent = [formatGenres(r.genre), r.city, r.country].filter(Boolean).join(' · ');
       const logo = $('#pLogo');
@@ -853,12 +750,11 @@
       updatePlayerFavButton();
     }
 
-    function updatePlayerFavButton() {
-      const icon = $('#btnPlayerFavIcon');
-      if (!icon || !state.currentRadio) return;
+    function updatePlayerFavButton(){
+      const icon = $('#btnPlayerFavIcon'); if (!icon || !state.currentRadio) return;
       const fav = isFavorite(state.currentRadio.id);
-      if (fav) { icon.setAttribute('fill', 'currentColor'); icon.classList.add('text-red-500'); icon.classList.remove('text-slate-300'); }
-      else { icon.setAttribute('fill', 'none'); icon.classList.remove('text-red-500'); icon.classList.add('text-slate-300'); }
+      if (fav) { icon.setAttribute('fill','currentColor'); icon.classList.add('text-red-500'); icon.classList.remove('text-slate-300'); }
+      else { icon.setAttribute('fill','none'); icon.classList.remove('text-red-500'); icon.classList.add('text-slate-300'); }
     }
 
     audio.addEventListener('playing', () => { clearTimeout(reconnectTimer); setStatus('Transmitiendo'); setPlayIcon(true); startMetadataPolling(); });
@@ -867,131 +763,238 @@
     audio.addEventListener('error', () => { setStatus('Reconectando...'); clearTimeout(reconnectTimer); reconnectTimer = setTimeout(() => { if (audio.src && state.currentRadio) audio.load(); }, 5000); });
     audio.addEventListener('stalled', () => setStatus('Reconectando...'));
 
-    $('#btnPlay').addEventListener('click', () => {
-      if (!state.currentRadio) { if (state.radios.length) playRadio(state.radios[0]); return; }
-      audio.paused ? resumeLive() : audio.pause();
-    });
-    $('#btnPlayerFav').addEventListener('click', async () => {
-      if (!state.currentRadio) { showToast('No hay radio reproduciéndose', 'info'); return; }
-      const icon = $('#btnPlayerFavIcon');
-      icon.classList.add('heart-pop');
-      setTimeout(() => icon.classList.remove('heart-pop'), 350);
-      await toggleFavorite(state.currentRadio);
-    });
+    $('#btnPlay').addEventListener('click', () => { if (!state.currentRadio) { if (state.radios.length) playRadio(state.radios[0]); return; } audio.paused ? resumeLive() : audio.pause(); });
+    $('#btnPlayerFav').addEventListener('click', async () => { if (!state.currentRadio) return; const i=$('#btnPlayerFavIcon'); i.classList.add('heart-pop'); setTimeout(()=>i.classList.remove('heart-pop'),350); await toggleFavorite(state.currentRadio); });
     $('#btnShare').addEventListener('click', () => { if (state.currentRadio) window.openShare(state.currentRadio); });
     $('#btnMute').addEventListener('click', () => { audio.muted = !audio.muted; setMuteIcon(); });
     $('#volSlider').addEventListener('input', (e) => syncVolume(+e.target.value));
-    $('#btnClose').addEventListener('click', () => { audio.pause(); audio.src = ''; state.currentRadio = null; stopMetadataPolling(); $('#audioPlayer').classList.add('hidden'); });
+    $('#btnClose').addEventListener('click', () => { audio.pause(); audio.src=''; state.currentRadio=null; stopMetadataPolling(); $('#audioPlayer').classList.add('hidden'); });
 
-    $('#globalSearch').addEventListener('input', (e) => {
+    // ⚡ BÚSQUEDA GLOBAL CON DEBOUNCE 300ms
+    $('#globalSearch').addEventListener('input', debounce((e) => {
       state.globalSearch = e.target.value;
-      if (state.globalSearch.trim()) state.currentView = 'explore';
+      state.page = 1;
+      if (state.globalSearch.trim() && state.currentView !== 'explore') state.currentView = 'explore';
       renderView();
-    });
+    }, 300));
 
     $$('[data-nav]').forEach(btn => btn.addEventListener('click', () => {
       const v = btn.dataset.nav;
       if (['favorites','dashboard'].includes(v) && !state.user) { window.openAuth('login'); return; }
       state.currentView = v;
-      if (v !== 'explore') { state.globalSearch = ''; $('#globalSearch').value = ''; }
+      state.page = 1;
       renderView();
     }));
 
-    function renderView() {
+    function renderView(){
       $$('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.nav === state.currentView));
       const v = state.currentView;
-      if (v === 'home')      renderHome();
-      else if (v === 'explore')   renderExplore();
-      else if (v === 'favorites') renderFavorites();
-      else if (v === 'dashboard') renderDashboard();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (v==='home') renderHome(); else if (v==='explore') renderExplore(); else if (v==='favorites') renderFavorites(); else if (v==='dashboard') renderDashboard();
+      window.scrollTo({top:0, behavior:'smooth'});
     }
 
-    function filteredRadios() {
-      const q = norm(state.globalSearch.trim());
-      if (!q) return state.radios;
-      return state.radios.filter(r =>
-        norm(r.name).includes(q) ||
-        normalizeGenres(r.genre).some(g => norm(g).includes(q)) ||
-        norm(r.country || '').includes(q) ||
-        norm(r.city || '').includes(q)
-      );
+    // ============================================================
+    // ⚡ TOOLBAR: vista + dropdowns de filtros
+    // ============================================================
+    function viewToggleHTML() {
+      return `
+      <div class="flex items-center bg-white/5 border border-white/10 rounded-lg p-1">
+        <button id="viewGrid" class="px-2.5 py-1.5 rounded-md transition ${state.viewMode==='grid'?'bg-brand-500 text-white':'text-slate-400 hover:text-white'}" title="Modo grilla">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+        </button>
+        <button id="viewList" class="px-2.5 py-1.5 rounded-md transition ${state.viewMode==='list'?'bg-brand-500 text-white':'text-slate-400 hover:text-white'}" title="Modo lista compacta">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+      </div>`;
     }
 
+    function ddHTML(key, icon, label) {
+      const active = (key==='genre'&&state.filterGenre)||(key==='country'&&state.filterCountry)||(key==='city'&&state.filterCity);
+      return `
+      <div class="dropdown relative" data-dd="${key}">
+        <button class="dd-toggle flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border text-xs font-medium transition ${active?'border-brand-500/40 text-brand-300':'border-white/10 text-slate-300 hover:bg-white/10'}">
+          <span>${icon}</span><span class="max-w-[110px] truncate">${escapeHtml(label)}</span>
+          <svg class="w-3 h-3 opacity-60" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+        </button>
+        <div class="dd-panel hidden absolute left-0 z-30 mt-2 w-64 bg-surface-900 border border-white/10 rounded-xl shadow-2xl shadow-black/50 p-2">
+          <input type="search" class="dd-search input !py-1.5 !text-xs mb-2" placeholder="Buscar..." autocomplete="off">
+          <div class="dd-options max-h-56 overflow-y-auto flex flex-col gap-1"></div>
+        </div>
+      </div>`;
+    }
+
+    function renderDDOptions(key, text) {
+      const dd = document.querySelector(`.dropdown[data-dd="${key}"]`);
+      if (!dd) return;
+      const box = dd.querySelector('.dd-options');
+      const q = norm(text.trim());
+      let opts = key==='genre' ? allGenres() : key==='country' ? allCountries() : allCities();
+      if (q) opts = opts.filter(o => norm(o).includes(q));
+      const current = key==='genre' ? state.filterGenre : key==='country' ? state.filterCountry : state.filterCity;
+      const rows = [`<button class="dd-option text-left px-3 py-1.5 rounded-lg text-xs transition ${!current?'bg-brand-500/20 text-brand-300':'hover:bg-white/5 text-slate-300'}" data-value="">Todos</button>`]
+        .concat(opts.slice(0, 200).map(o =>
+          `<button class="dd-option text-left px-3 py-1.5 rounded-lg text-xs transition ${current===o?'bg-brand-500/20 text-brand-300':'hover:bg-white/5 text-slate-300'}" data-value="${escapeHtml(o)}">${escapeHtml(o)}</button>`));
+      box.innerHTML = rows.join('') || '<p class="text-xs text-slate-500 p-2">Sin coincidencias</p>';
+    }
+
+    function toolbarHTML(total) {
+      const hasFilters = state.filterGenre || state.filterCountry || state.filterCity || state.globalSearch.trim();
+      return `
+      <div class="flex flex-wrap items-center gap-2 mb-5">
+        ${viewToggleHTML()}
+        ${ddHTML('genre','🎵', state.filterGenre || 'Género')}
+        ${ddHTML('country','🌎', state.filterCountry || 'País')}
+        ${ddHTML('city','🏙️', state.filterCity || 'Ciudad')}
+        ${hasFilters ? `<button id="clearFilters" class="px-3 py-2 rounded-lg text-xs font-medium bg-red-500/10 text-red-300 border border-red-500/30 hover:bg-red-500/20 transition">✕ Limpiar</button>` : ''}
+        <span class="ml-auto text-xs text-slate-500">${total} resultado${total!==1?'s':''}</span>
+      </div>`;
+    }
+
+    function bindToolbar() {
+      bindViewToggle();
+      const cf = $('#clearFilters');
+      if (cf) cf.addEventListener('click', () => {
+        state.filterGenre=''; state.filterCountry=''; state.filterCity='';
+        state.globalSearch=''; $('#globalSearch').value=''; state.page=1;
+        renderView();
+      });
+      $$('.dd-toggle').forEach(btn => btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const panel = btn.closest('.dropdown').querySelector('.dd-panel');
+        const wasHidden = panel.classList.contains('hidden');
+        $$('.dd-panel').forEach(p => p.classList.add('hidden'));
+        if (wasHidden) {
+          panel.classList.remove('hidden');
+          renderDDOptions(btn.closest('.dropdown').dataset.dd, '');
+          const s = panel.querySelector('.dd-search'); s.value=''; s.focus();
+        }
+      }));
+      $$('.dd-search').forEach(inp => inp.addEventListener('input', (e) => {
+        e.stopPropagation();
+        renderDDOptions(e.target.closest('.dropdown').dataset.dd, e.target.value);
+      }));
+    }
+
+    function bindViewToggle() {
+      const vg = $('#viewGrid'), vl = $('#viewList');
+      if (vg) vg.onclick = () => { state.viewMode='grid'; localStorage.setItem('rw_view','grid'); renderView(); };
+      if (vl) vl.onclick = () => { state.viewMode='list'; localStorage.setItem('rw_view','list'); renderView(); };
+    }
+
+    // Delegación global: opciones de dropdowns + cierre al clic fuera
+    document.addEventListener('click', (e) => {
+      const opt = e.target.closest('.dd-option');
+      if (opt) {
+        const key = opt.closest('.dropdown').dataset.dd;
+        const val = opt.dataset.value || '';
+        if (key==='genre') state.filterGenre = val;
+        else if (key==='country') { state.filterCountry = val; state.filterCity = ''; }
+        else if (key==='city') state.filterCity = val;
+        state.page = 1;
+        renderView();
+        return;
+      }
+      if (!e.target.closest('.dropdown')) $$('.dd-panel').forEach(p => p.classList.add('hidden'));
+    });
+
+    // ============================================================
+    // ⚡ PAGINACIÓN
+    // ============================================================
+    function paginationHTML(total, totalPages, start, shown) {
+      if (totalPages <= 1) return total ? `<p class="text-center text-xs text-slate-600 mt-6">Mostrando ${total} emisoras</p>` : '';
+      return `
+      <div class="flex items-center justify-center gap-3 mt-8">
+        <button id="prevPage" class="btn-secondary !py-2 !px-4 text-xs" ${state.page<=1?'disabled':''}>← Anterior</button>
+        <span class="text-xs text-slate-400">Página <span class="text-white font-semibold">${state.page}</span> de ${totalPages} · ${start+1}–${start+shown} de ${total}</span>
+        <button id="nextPage" class="btn-secondary !py-2 !px-4 text-xs" ${state.page>=totalPages?'disabled':''}>Siguiente →</button>
+      </div>`;
+    }
+    function bindPagination() {
+      const p = $('#prevPage'), n = $('#nextPage');
+      if (p) p.addEventListener('click', () => { if (state.page>1){ state.page--; renderView(); scrollToDir(); } });
+      if (n) n.addEventListener('click', () => { state.page++; renderView(); scrollToDir(); });
+    }
+    function scrollToDir(){ const el = $('#directory'); if (el) el.scrollIntoView({behavior:'smooth', block:'start'}); }
+
+    function emptyState() {
+      return `<div class="text-center py-16">
+        <div class="w-20 h-20 rounded-full bg-white/5 grid place-items-center mx-auto mb-4">
+          <svg class="w-10 h-10 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        </div>
+        <h3 class="text-lg font-semibold mb-2">Sin resultados</h3>
+        <p class="text-slate-400 text-sm">Ajusta la búsqueda o los filtros.</p>
+      </div>`;
+    }
+
+    function renderDirectory(items) {
+      const box = $('#directory');
+      if (!box) return;
+      if (!items.length) { box.innerHTML = emptyState(); return; }
+      if (state.viewMode === 'grid') {
+        box.innerHTML = `<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">${items.map(radioCard).join('')}</div>`;
+      } else {
+        box.innerHTML = `<div class="flex flex-col gap-2">${items.map(radioRow).join('')}</div>`;
+      }
+    }
+
+    // ============================================================
+    // VISTAS
+    // ============================================================
     function renderHome() {
-      const genres = [...new Set(state.radios.flatMap(r => normalizeGenres(r.genre)))];
-      const list = state.currentGenre
-        ? state.radios.filter(r => normalizeGenres(r.genre).includes(state.currentGenre))
-        : state.radios;
-      const featured = list.slice(0, 8);
-
+      const featured = state.radios.filter(r => r.featured === true).slice(0, 8);
+      const latest = state.radios.slice(0, 8);
       appEl.innerHTML = `
         <section class="relative rounded-3xl overflow-hidden border border-white/10 mb-10">
           <img src="${DEFAULT_BANNER_URL}" class="absolute inset-0 w-full h-full object-cover opacity-40">
           <div class="relative p-8 md:p-12">
-            <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-red-300 bg-red-500/20 px-2 py-1 rounded-full">
-              <span class="live-dot"></span> EN VIVO AHORA
-            </span>
+            <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-red-300 bg-red-500/20 px-2 py-1 rounded-full"><span class="live-dot"></span> EN VIVO AHORA</span>
             <h1 class="text-3xl md:text-5xl font-bold mt-3 mb-2">La música nunca se detiene</h1>
             <p class="text-slate-300 max-w-xl mb-5">Descubre emisoras de todo el mundo, sincroniza tus favoritos en todos tus dispositivos.</p>
-            ${state.radios[0] ? `<button class="btn-primary" onclick="window.playById('${state.radios[0].id}')">▶ Escuchar ${escapeHtml(state.radios[0].name)}</button>` : ''}
+            <div class="flex gap-2 flex-wrap">
+              ${state.radios[0] ? `<button class="btn-primary" onclick="window.playById('${state.radios[0].id}')">▶ Escuchar ${escapeHtml(state.radios[0].name)}</button>` : ''}
+              <button class="btn-secondary" onclick="window.nav('explore')">Explorar directorio completo</button>
+            </div>
           </div>
         </section>
 
+        ${featured.length ? `
         <section class="mb-10">
-          <h2 class="text-2xl font-bold mb-4">Filtrar por género</h2>
-          <div class="flex gap-2 flex-wrap">
-            <button data-genre="" class="genre-btn ${!state.currentGenre ? 'selected' : ''}">Todos</button>
-            ${genres.map(g => `<button data-genre="${escapeHtml(g)}" class="genre-btn ${state.currentGenre === g ? 'selected' : ''}">${escapeHtml(g)}</button>`).join('')}
+          <div class="flex items-center gap-2 mb-4">
+            <span class="text-2xl">⭐</span>
+            <h2 class="text-2xl font-bold bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">Emisoras Destacadas</h2>
           </div>
-        </section>
-
-        <section class="mb-10">
-          <h2 class="text-2xl font-bold mb-4">${state.currentGenre ? `Emisoras de ${escapeHtml(state.currentGenre)}` : 'Destacadas'}</h2>
-          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            ${featured.length ? featured.map(radioCard).join('') : `<div class="col-span-full text-center text-slate-400 py-12">Aún no hay emisoras.</div>`}
-          </div>
-        </section>
+          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">${featured.map(radioCard).join('')}</div>
+        </section>` : ''}
 
         <section>
-          <h2 class="text-2xl font-bold mb-4">Todas las emisoras</h2>
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-2xl font-bold">Últimas agregadas</h2>
+            <button onclick="window.nav('explore')" class="text-xs text-brand-400 hover:text-brand-300">Ver todas →</button>
+          </div>
           <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            ${list.length ? list.map(radioCard).join('') : '<div class="col-span-full text-center text-slate-400 py-8">Sin resultados</div>'}
+            ${latest.length ? latest.map(radioCard).join('') : '<div class="col-span-full text-center text-slate-400 py-12">Aún no hay emisoras.</div>'}
           </div>
         </section>
       `;
-      $$('.genre-btn').forEach(b => b.addEventListener('click', () => {
-        state.currentGenre = b.dataset.genre || null;
-        renderHome();
-      }));
     }
 
     function renderExplore() {
-      const results = filteredRadios();
+      const list = getFilteredRadios();
+      const total = list.length;
+      const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+      if (state.page > totalPages) state.page = totalPages;
+      const start = (state.page - 1) * PAGE_SIZE;
+      const items = list.slice(start, start + PAGE_SIZE);
+
       appEl.innerHTML = `
-        <h2 class="text-3xl font-bold mb-2">Explorar emisoras</h2>
-        <p class="text-slate-400 text-sm mb-6">Usa el buscador del menú superior para filtrar por nombre, género o ubicación.</p>
-
-        ${state.globalSearch.trim() ? `
-          <div class="mb-4 flex items-center gap-2">
-            <span class="text-sm text-slate-400">Resultados para:</span>
-            <span class="text-sm font-semibold text-brand-400">"${escapeHtml(state.globalSearch)}"</span>
-            <span class="text-xs text-slate-500">(${results.length})</span>
-          </div>
-        ` : ''}
-
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          ${results.length
-            ? results.map(radioCard).join('')
-            : `<div class="col-span-full text-center py-16">
-                 <div class="w-20 h-20 rounded-full bg-white/5 grid place-items-center mx-auto mb-4">
-                   <svg class="w-10 h-10 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                 </div>
-                 <h3 class="text-lg font-semibold mb-2">Sin resultados</h3>
-                 <p class="text-slate-400 text-sm">No encontramos emisoras que coincidan con tu búsqueda.</p>
-               </div>`}
-        </div>
+        <h2 class="text-3xl font-bold mb-4">Explorar emisoras</h2>
+        ${toolbarHTML(total)}
+        <div id="directory"></div>
+        ${paginationHTML(total, totalPages, start, items.length)}
       `;
+      renderDirectory(items);
+      bindToolbar();
+      bindPagination();
     }
 
     function renderFavorites() {
@@ -999,461 +1002,199 @@
       appEl.innerHTML = `
         <div class="flex items-center justify-between mb-6">
           <h2 class="text-3xl font-bold">Mis Favoritos</h2>
-          <span class="text-sm text-slate-400">${favRadios.length} emisora${favRadios.length !== 1 ? 's' : ''}</span>
+          <div class="flex items-center gap-3">${viewToggleHTML()}<span class="text-sm text-slate-400">${favRadios.length}</span></div>
         </div>
-        ${favRadios.length
-          ? `<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">${favRadios.map(radioCard).join('')}</div>`
-          : `<div class="text-center py-20">
-               <div class="w-20 h-20 rounded-full bg-white/5 grid place-items-center mx-auto mb-4">
-                 <svg class="w-10 h-10 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-               </div>
-               <h3 class="text-lg font-semibold mb-2">Tu colección está vacía</h3>
-               <p class="text-slate-400 mb-4">Guarda tus emisoras favoritas y accede desde cualquier dispositivo.</p>
-               <button onclick="window.nav('explore')" class="btn-primary">Explorar emisoras</button>
-             </div>`}
+        ${favRadios.length ? `<div id="directory"></div>` : `<div class="text-center py-20"><h3 class="text-lg font-semibold mb-2">Tu colección está vacía</h3><button onclick="window.nav('explore')" class="btn-primary">Explorar emisoras</button></div>`}
       `;
+      if (favRadios.length) renderDirectory(favRadios);
+      bindViewToggle();
     }
 
-    window.nav = (v) => { state.currentView = v; renderView(); };
+    window.nav = (v) => { state.currentView = v; state.page = 1; renderView(); };
 
-    // ============================================================
-    // 🔒 DASHBOARD (con panel admin para owner)
-    // ============================================================
-    function renderDashboard() {
-      const userRole = state.userData?.role;
-      const isBroadcaster = userRole === 'broadcaster';
-      const isOwner = userRole === 'owner';
-      
+    function renderDashboard(){
+      const role = state.userData?.role;
+      const isBroadcaster = role === 'broadcaster';
+      const isOwner = role === 'owner';
       appEl.innerHTML = `
         <div class="flex items-center justify-between mb-6">
-          <div>
-            <h2 class="text-3xl font-bold">Mi Panel</h2>
-            <p class="text-slate-400 text-sm">Rol: ${
-              isOwner ? '👑 Propietario del Portal' : 
-              isBroadcaster ? '🎙️ Emisora / Creador' : '🎧 Oyente'
-            }</p>
-          </div>
-          ${(isBroadcaster || isOwner)
-            ? `<button onclick="window.openRadioModal()" class="btn-primary">+ Agregar emisora</button>`
-            : `<p class="text-slate-500 text-sm">Contacta al administrador para convertirte en Emisora.</p>`}
+          <div><h2 class="text-3xl font-bold">Mi Panel</h2><p class="text-slate-400 text-sm">Rol: ${isOwner?'👑 Propietario':isBroadcaster?'🎙️ Emisora / Creador':'🎧 Oyente'}</p></div>
+          ${(isBroadcaster||isOwner) ? `<button onclick="window.openRadioModal()" class="btn-primary">+ Agregar emisora</button>` : `<p class="text-slate-500 text-sm">Contacta al administrador para ser Emisora.</p>`}
         </div>
-        
         ${isOwner ? `
           <div class="mb-8 p-6 bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/20 rounded-2xl">
-            <h3 class="text-xl font-bold mb-2 flex items-center gap-2">
-              <svg class="w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2L3 7v6c0 3.5 3 6.5 7 8 4-1.5 7-4.5 7-8V7l-7-5z"/></svg>
-              Panel de Administración
-            </h3>
+            <h3 class="text-xl font-bold mb-2">👑 Panel de Administración</h3>
             <p class="text-slate-400 text-sm mb-4">Gestiona usuarios y todas las radios del portal.</p>
             <div class="flex gap-2">
               <button onclick="window.renderAdminUsers()" class="btn-secondary !py-2 !px-4 text-xs">👥 Gestionar Usuarios</button>
               <button onclick="window.renderAdminRadios()" class="btn-secondary !py-2 !px-4 text-xs">📻 Todas las Radios</button>
             </div>
             <div id="adminContent" class="mt-4"></div>
-          </div>
-        ` : ''}
-        
-        ${(isBroadcaster || isOwner) ? `
+          </div>` : ''}
+        ${(isBroadcaster||isOwner) ? `
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            ${state.myRadios.length
-              ? state.myRadios.map(dashboardCard).join('')
-              : `<div class="col-span-full text-center py-16 bg-white/5 rounded-2xl border border-dashed border-white/10">
-                   <p class="text-slate-400 mb-3">Aún no has registrado emisoras.</p>
-                   <button onclick="window.openRadioModal()" class="btn-primary">+ Registrar mi primera emisora</button>
-                 </div>`}
-          </div>
-        ` : `
-          <div class="text-center py-16 bg-white/5 rounded-2xl border border-dashed border-white/10">
-            <div class="w-20 h-20 rounded-full bg-brand-500/20 grid place-items-center mx-auto mb-4">
-              <svg class="w-10 h-10 text-brand-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/></svg>
-            </div>
-            <h3 class="text-xl font-bold mb-2">Modo Oyente</h3>
-            <p class="text-slate-400 max-w-md mx-auto">Disfruta de las emisoras y guarda tus favoritas.</p>
-          </div>
-        `}
-      `;
+            ${state.myRadios.length ? state.myRadios.map(dashboardCard).join('') : `<div class="col-span-full text-center py-16 bg-white/5 rounded-2xl border border-dashed border-white/10"><p class="text-slate-400 mb-3">Aún no has registrado emisoras.</p><button onclick="window.openRadioModal()" class="btn-primary">+ Registrar mi primera emisora</button></div>`}
+          </div>` : `
+          <div class="text-center py-16 bg-white/5 rounded-2xl border border-dashed border-white/10"><h3 class="text-xl font-bold mb-2">Modo Oyente</h3><p class="text-slate-400">Disfruta de las emisoras y guarda tus favoritas.</p></div>`}`;
     }
 
-    // ============================================================
-    // 🔒 FUNCIONES ADMINISTRATIVAS (solo owner)
-    // ============================================================
+    // ================= ADMIN =================
     window.renderAdminUsers = async () => {
-      if (state.userData?.role !== 'owner') { showToast('Sin permisos', 'error'); return; }
-      const container = $('#adminContent');
-      container.innerHTML = '<p class="text-slate-400">Cargando usuarios...</p>';
-      
+      if (state.userData?.role !== 'owner') { showToast('Sin permisos','error'); return; }
+      const c = $('#adminContent'); c.innerHTML = '<p class="text-slate-400">Cargando...</p>';
       try {
         const snap = await getDocs(collection(db, 'users'));
         const users = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-        
-        container.innerHTML = `
-          <div class="bg-black/40 rounded-xl border border-white/10 overflow-hidden overflow-x-auto">
-            <table class="w-full text-sm">
-              <thead class="bg-white/5">
-                <tr>
-                  <th class="text-left p-3 text-xs font-semibold text-slate-400">Usuario</th>
-                  <th class="text-left p-3 text-xs font-semibold text-slate-400">Email</th>
-                  <th class="text-left p-3 text-xs font-semibold text-slate-400">Rol</th>
-                  <th class="text-left p-3 text-xs font-semibold text-slate-400">Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${users.map(u => `
-                  <tr class="border-t border-white/5">
-                    <td class="p-3">${escapeHtml(u.name || '—')}</td>
-                    <td class="p-3 text-xs text-slate-400">${escapeHtml(u.email || '')}</td>
-                    <td class="p-3">
-                      <span class="text-xs px-2 py-1 rounded-full ${
-                        u.role === 'owner' ? 'bg-amber-500/20 text-amber-300' :
-                        u.role === 'broadcaster' ? 'bg-brand-500/20 text-brand-300' :
-                        'bg-slate-500/20 text-slate-300'
-                      }">${escapeHtml(u.role || 'listener')}</span>
-                    </td>
-                    <td class="p-3">
-                      ${u.role !== 'owner' ? `
-                        <select onchange="window.adminChangeRole('${u.id}', this.value)" class="input !py-1 !px-2 !text-xs">
-                          <option value="">Cambiar a...</option>
-                          <option value="listener">Oyente</option>
-                          <option value="broadcaster">Emisora</option>
-                        </select>
-                      ` : '<span class="text-xs text-slate-500">🔒 Protegido</span>'}
-                    </td>
-                  </tr>
-                `).join('')}
-              </tbody>
-            </table>
-          </div>
-        `;
-      } catch (err) {
-        container.innerHTML = `<p class="text-red-400">Error: ${err.message}</p>`;
-      }
+        c.innerHTML = `<div class="bg-black/40 rounded-xl border border-white/10 overflow-x-auto"><table class="w-full text-sm">
+          <thead class="bg-white/5"><tr><th class="text-left p-3 text-xs text-slate-400">Usuario</th><th class="text-left p-3 text-xs text-slate-400">Email</th><th class="text-left p-3 text-xs text-slate-400">Rol</th><th class="text-left p-3 text-xs text-slate-400">Acciones</th></tr></thead>
+          <tbody>${users.map(u => `<tr class="border-t border-white/5">
+            <td class="p-3">${escapeHtml(u.name||'—')}</td><td class="p-3 text-xs text-slate-400">${escapeHtml(u.email||'')}</td>
+            <td class="p-3"><span class="text-xs px-2 py-1 rounded-full ${u.role==='owner'?'bg-amber-500/20 text-amber-300':u.role==='broadcaster'?'bg-brand-500/20 text-brand-300':'bg-slate-500/20 text-slate-300'}">${escapeHtml(u.role||'listener')}</span></td>
+            <td class="p-3">${u.role!=='owner' ? `<select onchange="window.adminChangeRole('${u.id}', this.value)" class="input !py-1 !px-2 !text-xs"><option value="">Cambiar a...</option><option value="listener">Oyente</option><option value="broadcaster">Emisora</option></select>` : '<span class="text-xs text-slate-500">🔒</span>'}</td>
+          </tr>`).join('')}</tbody></table></div>`;
+      } catch (err) { c.innerHTML = `<p class="text-red-400">Error: ${err.message}</p>`; }
     };
 
     window.adminChangeRole = async (uid, newRole) => {
       if (!newRole) return;
-      if (state.userData?.role !== 'owner') { showToast('Sin permisos', 'error'); return; }
-      if (!['listener', 'broadcaster'].includes(newRole)) { showToast('Rol inválido', 'error'); return; }
-      
-      try {
-        await updateDoc(doc(db, 'users', uid), { role: newRole, updatedAt: serverTimestamp() });
-        showToast(`Rol actualizado a ${newRole}`);
-        window.renderAdminUsers();
-      } catch (err) {
-        showToast('Error: ' + err.message, 'error');
-      }
+      if (state.userData?.role !== 'owner') { showToast('Sin permisos','error'); return; }
+      if (!['listener','broadcaster'].includes(newRole)) { showToast('Rol inválido','error'); return; }
+      try { await updateDoc(doc(db,'users',uid), { role: newRole, updatedAt: serverTimestamp() }); showToast(`Rol actualizado a ${newRole}`); window.renderAdminUsers(); }
+      catch (err) { showToast('Error: '+err.message,'error'); }
     };
 
     window.renderAdminRadios = () => {
-      if (state.userData?.role !== 'owner') { showToast('Sin permisos', 'error'); return; }
-      const container = $('#adminContent');
-      container.innerHTML = `
+      if (state.userData?.role !== 'owner') { showToast('Sin permisos','error'); return; }
+      const c = $('#adminContent');
+      const fc = state.radios.filter(r => r.featured === true).length;
+      c.innerHTML = `
+        <div class="mb-4 flex items-center gap-3"><span class="text-sm text-slate-400">Total: <span class="text-white font-semibold">${state.radios.length}</span></span><span class="text-sm text-slate-400">⭐ Destacadas: <span class="text-amber-400 font-semibold">${fc}</span></span></div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          ${state.radios.length
-            ? state.radios.map(r => `
-              <div class="bg-white/5 rounded-xl border border-white/10 overflow-hidden">
-                <div class="aspect-video relative bg-surface-900 overflow-hidden">
-                  <img src="${DEFAULT_BANNER_URL}" class="w-full h-full object-cover">
-                  ${r.logoUrl ? `<div class="absolute inset-0 grid place-items-center"><img src="${r.logoUrl}" class="w-16 h-16 rounded-lg object-cover shadow-xl"></div>` : ''}
-                </div>
-                <div class="p-3">
-                  <h4 class="font-semibold text-sm truncate">${escapeHtml(r.name)}</h4>
-                  <p class="text-xs text-slate-400 mb-2">Owner: ${escapeHtml(r.ownerName || r.ownerId?.slice(0,8) || '?')}</p>
-                  <div class="flex gap-2">
-                    <button onclick="window.playById('${r.id}')" class="btn-secondary flex-1 !py-1.5 text-xs">▶ Escuchar</button>
-                    <button onclick="window.adminDeleteRadio('${r.id}')" class="btn-secondary !py-1.5 !px-2 text-xs hover:!bg-red-500/20 hover:text-red-400">
-                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            `).join('')
-            : '<p class="text-slate-400">No hay radios registradas.</p>'}
-        </div>
-      `;
+          ${state.radios.length ? state.radios.map(r => {
+            const f = r.featured === true;
+            return `<div class="bg-white/5 rounded-xl border ${f?'border-amber-500/30':'border-white/10'} overflow-hidden">
+              <div class="aspect-video relative bg-surface-900 overflow-hidden"><img src="${DEFAULT_BANNER_URL}" loading="lazy" decoding="async" class="w-full h-full object-cover">${r.logoUrl?`<div class="absolute inset-0 grid place-items-center"><img src="${r.logoUrl}" loading="lazy" decoding="async" class="w-16 h-16 rounded-lg object-cover shadow-xl"></div>`:''}</div>
+              <div class="p-3"><h4 class="font-semibold text-sm truncate">${escapeHtml(r.name)}</h4><p class="text-xs text-slate-400 mb-2">Owner: ${escapeHtml(r.ownerName||'?')}</p>
+              <div class="flex gap-1.5 flex-wrap">
+                <button onclick="window.playById('${r.id}')" class="btn-secondary !py-1.5 !px-2 text-xs">▶</button>
+                <button onclick="window.adminToggleFeatured('${r.id}', ${!f})" class="btn-secondary !py-1.5 !px-2 text-xs hover:!bg-amber-500/20 hover:text-amber-400" title="${f?'Quitar de destacadas':'Marcar destacada'}">
+                  <svg class="w-3.5 h-3.5 ${f?'text-amber-400':''}" fill="${f?'currentColor':'none'}" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.196-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+                </button>
+                <button onclick="window.adminEditRadio('${r.id}')" class="btn-secondary !py-1.5 !px-2 text-xs" title="Editar">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                </button>
+                <button onclick="window.adminDeleteRadio('${r.id}')" class="btn-secondary !py-1.5 !px-2 text-xs hover:!bg-red-500/20 hover:text-red-400" title="Eliminar">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                </button>
+              </div></div></div>`;
+          }).join('') : '<p class="text-slate-400">No hay radios.</p>'}
+        </div>`;
     };
 
-    window.adminDeleteRadio = async (radioId) => {
-      if (state.userData?.role !== 'owner') { showToast('Sin permisos', 'error'); return; }
-      if (!confirm('¿Eliminar esta radio como administrador? Esta acción no se puede deshacer.')) return;
-      try {
-        await deleteDoc(doc(db, 'radios', radioId));
-        showToast('Radio eliminada por administrador');
-        window.renderAdminRadios();
-      } catch (err) {
-        showToast('Error: ' + err.message, 'error');
-      }
+    window.adminToggleFeatured = async (id, val) => {
+      if (state.userData?.role !== 'owner') { showToast('Sin permisos','error'); return; }
+      try { await updateDoc(doc(db,'radios',id), { featured: val, updatedAt: serverTimestamp() }); showToast(val?'⭐ Radio destacada':'Radio quitada de destacadas'); window.renderAdminRadios(); }
+      catch (err) { showToast('Error: '+err.message,'error'); }
+    };
+
+    window.adminEditRadio = (id) => {
+      if (state.userData?.role !== 'owner') { showToast('Sin permisos','error'); return; }
+      const radio = state.radios.find(r => r.id === id);
+      if (!radio) { showToast('Radio no encontrada','error'); return; }
+      if (!state.myRadios.find(r => r.id === id)) state.myRadios.push(radio);
+      window.openRadioModal(id);
+    };
+
+    window.adminDeleteRadio = async (id) => {
+      if (state.userData?.role !== 'owner') { showToast('Sin permisos','error'); return; }
+      if (!confirm('¿Eliminar esta radio como administrador?')) return;
+      try { await deleteDoc(doc(db,'radios',id)); showToast('Radio eliminada'); window.renderAdminRadios(); }
+      catch (err) { showToast('Error: '+err.message,'error'); }
     };
 
     // ============================================================
-    // TARJETAS
+    // TARJETAS (con lazy loading de imágenes)
     // ============================================================
-    function radioCard(r) {
+    function radioCard(r){
       const fav = isFavorite(r.id);
-      const isPlaying = state.currentRadio?.id === r.id;
+      const playing = state.currentRadio?.id === r.id;
       const genres = normalizeGenres(r.genre);
-      const genreText = genres.length ? genres.slice(0, 2).join(' · ') + (genres.length > 2 ? ` +${genres.length - 2}` : '') : '';
+      const gt = genres.length ? genres.slice(0,2).join(' · ') + (genres.length>2?` +${genres.length-2}`:'') : '';
+      const f = r.featured === true;
       return `
-        <div class="group relative bg-white/5 hover:bg-white/10 rounded-2xl overflow-hidden border border-white/5 transition hover:-translate-y-1 hover:shadow-xl hover:shadow-brand-500/10">
+        <div class="group relative bg-white/5 hover:bg-white/10 rounded-2xl overflow-hidden border ${f?'border-amber-500/30 shadow-lg shadow-amber-500/10':'border-white/5'} transition hover:-translate-y-1">
           <div class="aspect-square relative overflow-hidden bg-surface-900">
-            ${r.logoUrl
-              ? `<img src="${r.logoUrl}" alt="${escapeHtml(r.name)}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-                 <div class="absolute inset-0 bg-gradient-to-br from-brand-600 to-purple-700 grid place-items-center hidden"><svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg></div>`
-              : `<div class="absolute inset-0 bg-gradient-to-br from-brand-600 to-purple-700 grid place-items-center"><svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg></div>`}
-
+            ${r.logoUrl ? `<img src="${r.logoUrl}" alt="${escapeHtml(r.name)}" loading="lazy" decoding="async" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="absolute inset-0 bg-gradient-to-br from-brand-600 to-purple-700 grid place-items-center hidden"><svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg></div>` : `<div class="absolute inset-0 bg-gradient-to-br from-brand-600 to-purple-700 grid place-items-center"><svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg></div>`}
+            ${f ? `<div class="absolute top-2 left-2 z-20 flex items-center gap-1 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-lg">⭐ DESTACADA</div>` : ''}
             <div class="absolute top-2 right-2 z-20">
-              <button data-action="fav" data-id="${r.id}" class="w-9 h-9 rounded-full bg-black/60 backdrop-blur grid place-items-center hover:bg-black/80 transition" title="${fav ? 'Quitar' : 'Agregar'}">
-                <svg class="w-4 h-4 ${fav ? 'text-red-500' : 'text-white'}" fill="${fav ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+              <button data-action="fav" data-id="${r.id}" class="w-9 h-9 rounded-full bg-black/60 backdrop-blur grid place-items-center hover:bg-black/80 transition" title="${fav?'Quitar':'Agregar'}">
+                <svg class="w-4 h-4 ${fav?'text-red-500':'text-white'}" fill="${fav?'currentColor':'none'}" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
               </button>
             </div>
-
-            ${isPlaying ? `<div class="absolute bottom-2 left-2 z-10 flex items-center gap-1 text-xs font-bold text-white bg-red-500/90 px-2 py-1 rounded-full"><span class="live-dot"></span> Sonando</div>` : ''}
-
+            ${playing ? `<div class="absolute bottom-2 left-2 z-10 flex items-center gap-1 text-xs font-bold text-white bg-red-500/90 px-2 py-1 rounded-full"><span class="live-dot"></span> Sonando</div>` : ''}
             <div class="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition grid place-items-center opacity-0 group-hover:opacity-100">
-              <button data-action="play" data-id="${r.id}" class="w-14 h-14 rounded-full bg-brand-500 hover:bg-brand-600 grid place-items-center shadow-lg">
-                <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-              </button>
+              <button data-action="play" data-id="${r.id}" class="w-14 h-14 rounded-full bg-brand-500 hover:bg-brand-600 grid place-items-center shadow-lg"><svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
             </div>
           </div>
           <div class="p-3">
             <div class="flex items-start justify-between gap-2">
-              <h3 class="font-semibold truncate">${escapeHtml(r.name)}</h3>
-              <button data-action="share" data-id="${r.id}" class="shrink-0 w-7 h-7 rounded-full bg-white/5 hover:bg-white/10 grid place-items-center" title="Compartir">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
-              </button>
+              <h3 class="font-semibold truncate ${f?'text-amber-200':''}">${escapeHtml(r.name)}</h3>
+              <button data-action="share" data-id="${r.id}" class="shrink-0 w-7 h-7 rounded-full bg-white/5 hover:bg-white/10 grid place-items-center" title="Compartir"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg></button>
             </div>
-            <p class="text-xs text-slate-400 truncate">${escapeHtml(genreText)}</p>
+            <p class="text-xs text-slate-400 truncate">${escapeHtml(gt)}</p>
             <p class="text-xs text-slate-500 truncate">${escapeHtml([r.city, r.country].filter(Boolean).join(', '))}</p>
             ${socialLinks(r)}
           </div>
         </div>`;
     }
 
-    function dashboardCard(r) {
+    // ⚡ FILA COMPACTA (modo lista)
+    function radioRow(r){
+      const fav = isFavorite(r.id);
+      const playing = state.currentRadio?.id === r.id;
+      const f = r.featured === true;
+      return `
+      <div class="flex items-center gap-3 bg-white/5 hover:bg-white/10 border ${f?'border-amber-500/30':'border-white/5'} rounded-xl px-3 py-2 transition">
+        <button data-action="play" data-id="${r.id}" class="w-9 h-9 shrink-0 rounded-full ${playing?'bg-red-500':'bg-brand-500 hover:bg-brand-600'} grid place-items-center shadow" title="Reproducir">
+          ${playing ? '<span class="live-dot"></span>' : '<svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>'}
+        </button>
+        <div class="w-10 h-10 shrink-0 rounded-lg overflow-hidden bg-surface-900 grid place-items-center">
+          ${r.logoUrl ? `<img src="${r.logoUrl}" alt="" loading="lazy" decoding="async" class="w-full h-full object-cover">` : `<svg class="w-5 h-5 text-white/40" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>`}
+        </div>
+        <div class="min-w-0 flex-1">
+          <p class="font-semibold text-sm truncate ${f?'text-amber-200':''}">${f?'⭐ ':''}${escapeHtml(r.name)}</p>
+          <p class="text-xs text-slate-500 truncate">${escapeHtml(formatGenres(r.genre))}${r.city?` · ${escapeHtml(r.city)}`:''}${r.country?`, ${escapeHtml(r.country)}`:''}</p>
+        </div>
+        ${socialLinks(r, 'hidden md:flex items-center gap-1.5')}
+        <button data-action="fav" data-id="${r.id}" class="w-8 h-8 shrink-0 rounded-full bg-white/5 hover:bg-white/10 grid place-items-center" title="Favorito">
+          <svg class="w-4 h-4 ${fav?'text-red-500':'text-slate-300'}" fill="${fav?'currentColor':'none'}" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+        </button>
+        <button data-action="share" data-id="${r.id}" class="w-8 h-8 shrink-0 rounded-full bg-white/5 hover:bg-white/10 grid place-items-center" title="Compartir">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+        </button>
+      </div>`;
+    }
+
+    function dashboardCard(r){
       const genres = normalizeGenres(r.genre);
       return `
         <div class="bg-white/5 rounded-2xl border border-white/5 overflow-hidden">
-          <div class="aspect-video relative bg-surface-900 overflow-hidden">
-            <img src="${DEFAULT_BANNER_URL}" class="w-full h-full object-cover">
-            ${r.logoUrl ? `<div class="absolute inset-0 grid place-items-center"><img src="${r.logoUrl}" class="w-20 h-20 rounded-xl object-cover shadow-xl"></div>` : ''}
-          </div>
-          <div class="p-4">
-            <h3 class="font-semibold mb-1">${escapeHtml(r.name)}</h3>
-            <p class="text-xs text-slate-400 mb-1 truncate">${escapeHtml(genres.join(' · '))}</p>
-            ${socialLinks(r)}
-            <div class="flex gap-2 mt-3">
-              <button onclick="window.playById('${r.id}')" class="btn-secondary flex-1 !py-2 text-xs">▶ Reproducir</button>
-              <button onclick="window.openRadioModal('${r.id}')" class="btn-secondary !py-2 !px-3 text-xs" title="Editar">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-              </button>
-              <button onclick="window.deleteRadio('${r.id}')" class="btn-secondary !py-2 !px-3 text-xs hover:!bg-red-500/20 hover:text-red-400" title="Eliminar">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-              </button>
-            </div>
-          </div>
-        </div>`;
+          <div class="aspect-video relative bg-surface-900 overflow-hidden"><img src="${DEFAULT_BANNER_URL}" loading="lazy" decoding="async" class="w-full h-full object-cover">${r.logoUrl?`<div class="absolute inset-0 grid place-items-center"><img src="${r.logoUrl}" loading="lazy" decoding="async" class="w-20 h-20 rounded-xl object-cover shadow-xl"></div>`:''}</div>
+          <div class="p-4"><h3 class="font-semibold mb-1">${escapeHtml(r.name)}</h3><p class="text-xs text-slate-400 mb-1 truncate">${escapeHtml(genres.join(' · '))}</p>${socialLinks(r)}
+          <div class="flex gap-2 mt-3">
+            <button onclick="window.playById('${r.id}')" class="btn-secondary flex-1 !py-2 text-xs">▶ Reproducir</button>
+            <button onclick="window.openRadioModal('${r.id}')" class="btn-secondary !py-2 !px-3 text-xs" title="Editar"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>
+            <button onclick="window.deleteRadio('${r.id}')" class="btn-secondary !py-2 !px-3 text-xs hover:!bg-red-500/20 hover:text-red-400" title="Eliminar"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+          </div></div></div>`;
     }
 
     let bound = false;
-    function bindInteractiveCards() {
-      if (bound) return;
-      bound = true;
+    function bindInteractiveCards(){
+      if (bound) return; bound = true;
       document.addEventListener('click', async (e) => {
-        const btn = e.target.closest('[data-action]');
-        if (!btn) return;
-        e.stopPropagation();
-        e.preventDefault();
+        const btn = e.target.closest('[data-action]'); if (!btn) return;
+        e.stopPropagation(); e.preventDefault();
         const { action, id } = btn.dataset;
-        const r = state.radios.find(x => x.id === id);
-        if (!r) return;
-        if (action === 'play') playRadio(r);
-        else if (action === 'fav') {
-          const icon = btn.querySelector('svg');
-          if (icon) { icon.classList.add('heart-pop'); setTimeout(() => icon.classList.remove('heart-pop'), 350); }
-          await toggleFavorite(r);
-        }
-        else if (action === 'share') window.openShare(r);
-      });
-    }
-    bindInteractiveCards();
-
-    window.playById = (id) => { const r = state.radios.find(x => x.id === id); if (r) playRadio(r); };
-    window.deleteRadio = (id) => deleteRadio(id);
-
-    // ============================================================
-    // MODAL RADIO
-    // ============================================================
-    function renderGenreChips(selected = []) {
-      state.selectedGenres = [...selected];
-      const container = $('#genreChips');
-      container.innerHTML = GENRES.map(g =>
-        `<button type="button" data-genre="${escapeHtml(g)}" class="genre-chip ${selected.includes(g) ? 'selected' : ''}">${escapeHtml(g)}</button>`
-      ).join('');
-      updateGenreCount();
-      container.querySelectorAll('.genre-chip').forEach(chip => {
-        chip.addEventListener('click', () => {
-          const g = chip.dataset.genre;
-          if (state.selectedGenres.includes(g)) {
-            state.selectedGenres = state.selectedGenres.filter(x => x !== g);
-            chip.classList.remove('selected');
-          } else {
-            state.selectedGenres.push(g);
-            chip.classList.add('selected');
-          }
-          updateGenreCount();
-        });
-      });
-    }
-
-    function updateGenreCount() {
-      const count = state.selectedGenres.length;
-      const el = $('#genreCount');
-      if (count === 0)    { el.textContent = 'Selecciona al menos 3 géneros'; el.className = 'text-xs text-slate-400 mt-1'; }
-      else if (count < 3) { el.textContent = `${count} de 3 seleccionados`; el.className = 'text-xs text-amber-400 mt-1'; }
-      else                { el.textContent = `✓ ${count} géneros seleccionados`; el.className = 'text-xs text-green-400 mt-1'; }
-      $('#genreError').classList.add('hidden');
-    }
-
-    window.openRadioModal = (id = null) => {
-      if (!state.user) { showToast('Debes iniciar sesión', 'error'); window.openAuth('login'); return; }
-      const role = state.userData?.role;
-      if (role !== 'broadcaster' && role !== 'owner') {
-        showToast('Debes tener rol de Emisora u Owner', 'error');
-        return;
-      }
-
-      const form = $('#formRadio');
-      form.reset();
-      state.selectedLogoFile = null;
-      const preview = $('#logoPreview');
-      preview.className = 'logo-preview empty';
-      preview.innerHTML = '<span>Sin logo</span>';
-      $('#logoStatus').textContent = '';
-
-      if (id) {
-        const r = state.myRadios.find(x => x.id === id);
-        if (!r) { showToast('Emisora no encontrada', 'error'); return; }
-        $('#radioModalTitle').textContent = 'Editar emisora';
-        form.elements.id.value = r.id;
-        form.elements.name.value = r.name || '';
-        form.elements.streamUrl.value = r.streamUrl || '';
-        form.elements.country.value = r.country || '';
-        form.elements.city.value = r.city || '';
-        form.elements.webUrl.value = r.webUrl || '';
-        form.elements.facebook.value = r.facebook || '';
-        form.elements.instagram.value = r.instagram || '';
-        form.elements.twitter.value = r.twitter || '';
-        form.elements.existingLogoUrl.value = r.logoUrl || '';
-        if (r.logoUrl) {
-          preview.className = 'logo-preview';
-          preview.innerHTML = `<img src="${r.logoUrl}" alt="Logo">`;
-          $('#logoStatus').textContent = 'Logo actual cargado';
-        }
-        renderGenreChips(normalizeGenres(r.genre));
-      } else {
-        $('#radioModalTitle').textContent = 'Registrar emisora';
-        form.elements.id.value = '';
-        form.elements.existingLogoUrl.value = '';
-        renderGenreChips([]);
-      }
-      $('#radioModal').classList.remove('hidden');
-    };
-
-    window.closeRadioModal = () => {
-      $('#radioModal').classList.add('hidden');
-      $('#genreError').classList.add('hidden');
-      state.selectedLogoFile = null;
-      $('#formRadio').reset();
-    };
-
-    $('#logoInput').addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      if (!file.type.startsWith('image/')) { showToast('Solo imágenes', 'error'); e.target.value = ''; return; }
-      if (file.size > 8 * 1024 * 1024) { showToast('Máx 8 MB', 'error'); e.target.value = ''; return; }
-      state.selectedLogoFile = file;
-      $('#logoStatus').textContent = `✅ ${file.name} (${(file.size/1024).toFixed(0)} KB)`;
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        $('#logoPreview').className = 'logo-preview';
-        $('#logoPreview').innerHTML = `<img src="${ev.target.result}" alt="Preview">`;
-      };
-      reader.readAsDataURL(file);
-    });
-
-    $('#formRadio').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      if (!auth.currentUser) { showToast('Debes iniciar sesión', 'error'); window.openAuth('login'); return; }
-      if (state.selectedGenres.length < 3) {
-        $('#genreError').classList.remove('hidden');
-        showToast('Selecciona al menos 3 géneros', 'error');
-        return;
-      }
-      const d = Object.fromEntries(new FormData(e.target));
-      d.genre = [...state.selectedGenres];
-
-      const btn = $('#btnSaveRadio');
-      const original = btn.textContent;
-      btn.disabled = true;
-      btn.textContent = 'Guardando...';
-      try {
-        await saveRadio(d);
-        window.closeRadioModal();
-        showToast('✅ Emisora guardada correctamente');
-      } catch (err) { showToast('Error: ' + err.message, 'error'); }
-      finally { btn.disabled = false; btn.textContent = original; }
-    });
-
-    // ============================================================
-    // COMPARTIR + EMBED
-    // ============================================================
-    window.openShare = (radio) => {
-      state.shareRadio = radio;
-
-      const playerUrl = `${location.origin}${BASE_PATH}player.html?listen=${encodeURIComponent(radio.id)}&embed=1`;
-      const portalUrl = `${location.origin}${BASE_PATH}?listen=${encodeURIComponent(radio.id)}`;
-      const text = `Escucha ${radio.name} en RadioWave 🎵`;
-
-      $('#shareName').textContent = radio.name;
-
-      const embedCode = `<iframe src="${playerUrl}" width="100%" height="120" frameborder="0" allow="autoplay" style="border-radius:12px; border:1px solid #1f2937;"></iframe>`;
-      $('#embedCode').value = embedCode;
-
-      $('#embedPreview').innerHTML = `<iframe src="${playerUrl}" width="100%" height="120" frameborder="0" allow="autoplay" style="border-radius:8px;"></iframe>`;
-
-      const links = {
-        whatsapp: `https://wa.me/?text=${encodeURIComponent(text + ' ' + portalUrl)}`,
-        telegram: `https://t.me/share/url?url=${encodeURIComponent(portalUrl)}&text=${encodeURIComponent(text)}`,
-        facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(portalUrl)}`,
-        twitter:  `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(portalUrl)}`
-      };
-      $$('.share-btn').forEach(b => {
-        b.onclick = () => {
-          const k = b.dataset.share;
-          if (k === 'copy') { navigator.clipboard.writeText(portalUrl); showToast('Enlace copiado'); }
-          else window.open(links[k], '_blank', 'width=600,height=500');
-        };
-      });
-      $('#shareModal').classList.remove('hidden');
-    };
-    window.closeShare = () => $('#shareModal').classList.add('hidden');
-    window.copyEmbed = () => { navigator.clipboard.writeText($('#embedCode').value); showToast('Código iFrame copiado'); };
-
-    // ============================================================
-    // INIT
-    // ============================================================
-    console.log('🚀 RadioWave portal iniciando en:', BASE_PATH);
-
-    const params = new URLSearchParams(location.search);
-    const listenId = params.get('listen');
-    if (listenId) {
-      const check = setInterval(() => {
-        const r = state.radios.find(x => x.id === listenId);
-        if (r) { playRadio(r); clearInterval(check); }
-      }, 300);
-    }
-
-    $('#volSlider').value = audio.volume;
-    renderView();
-  </script>
-</body>
-</html>
+        const r = state.radios.find(x => x.id === id); if (!r) return;
+        if (action==='play') playRadio(r);
+        else if (action==='fav') { const i=btn.querySelector('svg'); if(i){i.classList.add('heart-pop'); setTimeout(()=>i.classList.remove('heart-pop'),350);} await toggleFavorite
