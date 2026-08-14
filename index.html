@@ -25,7 +25,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 
   <style>
     html.dark { color-scheme: dark; }
@@ -37,10 +36,6 @@
                   #07090c;
       min-height: 100vh;
     }
-
-    /* ===== MODO EMBED: oculta todo el portal, deja solo el mini-player ===== */
-    .embed-mode header, .embed-mode main#app, .embed-mode #audioPlayer, .embed-mode #toast { display: none !important; }
-    .embed-mode { padding-bottom: 0 !important; background: #07090c !important; }
 
     select.input {
       background-color: #0f1115; color: #e2e8f0;
@@ -132,37 +127,50 @@
 
     .social-ico {
       width: 26px; height: 26px; border-radius: 9999px;
-      background: rgba(255,255,255,.06); display: grid; place-items: center;
-      transition: .15s;
+      background: rgba(255,255,255,.06); display: grid; place-items: center; transition: .15s;
     }
     .social-ico:hover { background: rgba(99,102,241,.4); transform: translateY(-1px); }
+    .social-ico svg { width: 13px; height: 13px; }
   </style>
 </head>
 
 <body class="text-slate-200 pb-28">
 
+  <!-- ========================================================= -->
+  <!-- HEADER con buscador global integrado                      -->
+  <!-- ========================================================= -->
   <header class="sticky top-0 z-40 backdrop-blur-xl bg-surface-950/70 border-b border-white/5">
-    <div class="max-w-7xl mx-auto px-4 lg:px-8 h-16 flex items-center justify-between">
-      <div class="flex items-center gap-3">
+    <div class="max-w-7xl mx-auto px-4 lg:px-8 h-16 flex items-center gap-4">
+      <!-- Logo -->
+      <a href="#" onclick="window.nav('home');return false;" class="flex items-center gap-2 shrink-0">
         <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-purple-600 grid place-items-center shadow-lg shadow-brand-500/30">
-          <i data-lucide="radio" class="w-5 h-5 text-white"></i>
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
         </div>
-        <span class="font-bold text-lg tracking-tight">Radio<span class="text-brand-400">Wave</span></span>
+        <span class="font-bold text-lg tracking-tight hidden sm:inline">Radio<span class="text-brand-400">Wave</span></span>
+      </a>
+
+      <!-- BUSCADOR GLOBAL en el header -->
+      <div class="flex-1 max-w-xl relative">
+        <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+        <input id="globalSearch" type="search" placeholder="Buscar emisoras, géneros, países..."
+               class="input !pl-9 !py-2 !text-sm w-full" />
       </div>
 
-      <nav class="hidden md:flex items-center gap-1 bg-white/5 rounded-full p-1 border border-white/5">
-        <button data-nav="home"      class="nav-btn px-4 py-1.5 rounded-full text-sm font-medium">Inicio</button>
-        <button data-nav="explore"   class="nav-btn px-4 py-1.5 rounded-full text-sm font-medium">Explorar</button>
-        <button data-nav="favorites" class="nav-btn px-4 py-1.5 rounded-full text-sm font-medium auth-only hidden">Mis Favoritos</button>
-        <button data-nav="dashboard" class="nav-btn px-4 py-1.5 rounded-full text-sm font-medium auth-only hidden">Mi Panel</button>
+      <!-- Nav desktop -->
+      <nav class="hidden lg:flex items-center gap-1 bg-white/5 rounded-full p-1 border border-white/5">
+        <button data-nav="home"      class="nav-btn px-3 py-1.5 rounded-full text-xs font-medium">Inicio</button>
+        <button data-nav="explore"   class="nav-btn px-3 py-1.5 rounded-full text-xs font-medium">Explorar</button>
+        <button data-nav="favorites" class="nav-btn px-3 py-1.5 rounded-full text-xs font-medium auth-only hidden">Favoritos</button>
+        <button data-nav="dashboard" class="nav-btn px-3 py-1.5 rounded-full text-xs font-medium auth-only hidden">Panel</button>
       </nav>
 
-      <div class="flex items-center gap-2">
-        <div id="authArea" class="flex items-center gap-2"></div>
-      </div>
+      <div id="authArea" class="flex items-center gap-2 shrink-0"></div>
     </div>
 
-    <nav class="md:hidden flex items-center gap-1 overflow-x-auto px-4 pb-2">
+    <!-- Nav móvil -->
+    <nav class="lg:hidden flex items-center gap-1 overflow-x-auto px-4 pb-2">
       <button data-nav="home"      class="nav-btn shrink-0 px-3 py-1.5 rounded-full text-xs font-medium bg-white/5">Inicio</button>
       <button data-nav="explore"   class="nav-btn shrink-0 px-3 py-1.5 rounded-full text-xs font-medium bg-white/5">Explorar</button>
       <button data-nav="favorites" class="nav-btn shrink-0 px-3 py-1.5 rounded-full text-xs font-medium bg-white/5 auth-only hidden">Favoritos</button>
@@ -173,14 +181,14 @@
   <main id="app" class="max-w-7xl mx-auto px-4 lg:px-8 py-8"></main>
 
   <!-- ========================================================= -->
-  <!-- REPRODUCTOR PRINCIPAL (footer del portal)                 -->
+  <!-- REPRODUCTOR PRINCIPAL (sticky footer)                     -->
   <!-- ========================================================= -->
   <footer id="audioPlayer" class="fixed bottom-0 inset-x-0 z-50 hidden">
     <div class="max-w-7xl mx-auto px-3 lg:px-8">
       <div class="bg-gradient-to-r from-surface-900 via-surface-900 to-surface-950 border border-white/10 rounded-t-2xl shadow-2xl shadow-black/50 px-4 py-3 flex items-center gap-3">
         <div class="shrink-0 w-14 h-14 rounded-xl bg-white/5 grid place-items-center overflow-hidden ring-1 ring-white/10">
           <img id="pLogo" src="" alt="" class="w-full h-full object-cover hidden" />
-          <i data-lucide="radio" class="w-6 h-6 text-white/60" id="pIcon"></i>
+          <svg class="w-6 h-6 text-white/60" id="pIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
         </div>
         <div class="min-w-0 flex-1">
           <div class="flex items-center gap-2">
@@ -195,20 +203,20 @@
         <div id="pStatus" class="hidden sm:block text-xs text-slate-400 min-w-[90px]"></div>
         <div class="flex items-center gap-2">
           <button id="btnPlayerFav" class="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 grid place-items-center transition" title="Favoritos">
-            <i id="btnPlayerFavIcon" data-lucide="heart" class="w-5 h-5 text-slate-300"></i>
+            <svg id="btnPlayerFavIcon" class="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
           </button>
           <button id="btnShare" class="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 grid place-items-center transition" title="Compartir">
-            <i data-lucide="share-2" class="w-5 h-5"></i>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
           </button>
           <button id="btnPlay" class="w-11 h-11 rounded-full bg-brand-500 hover:bg-brand-600 grid place-items-center shadow-lg shadow-brand-500/30 transition">
-            <i id="btnPlayIcon" data-lucide="play" class="w-5 h-5 text-white"></i>
+            <svg id="btnPlayIcon" class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
           </button>
           <button id="btnMute" class="w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 grid place-items-center transition">
-            <i id="btnMuteIcon" data-lucide="volume-2" class="w-4 h-4"></i>
+            <svg id="btnMuteIcon" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
           </button>
           <input id="volSlider" type="range" min="0" max="1" step="0.01" value="0.8" class="range-vol w-20 hidden sm:block" />
           <button id="btnClose" class="w-9 h-9 rounded-full bg-white/5 hover:bg-red-500/20 hover:text-red-400 grid place-items-center transition">
-            <i data-lucide="x" class="w-4 h-4"></i>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
           </button>
         </div>
       </div>
@@ -216,43 +224,12 @@
   </footer>
 
   <!-- ========================================================= -->
-  <!-- REPRODUCTOR EMBED COMPACTO (120px) — sin corazón, sin X   -->
+  <!-- MODAL AUTH                                                -->
   <!-- ========================================================= -->
-  <div id="embedPlayer" class="hidden fixed inset-0 z-50">
-    <div class="h-full w-full flex items-center gap-3 px-3 bg-gradient-to-r from-surface-900 via-surface-950 to-surface-900 border border-white/10">
-      <!-- Logo -->
-      <div class="shrink-0 w-[76px] h-[76px] rounded-xl bg-white/5 grid place-items-center overflow-hidden ring-1 ring-white/10">
-        <img id="eLogo" src="" alt="" class="w-full h-full object-cover hidden" />
-        <i data-lucide="radio" class="w-8 h-8 text-white/50" id="eIcon"></i>
-      </div>
-
-      <!-- Info + marca de agua -->
-      <div class="min-w-0 flex-1">
-        <a id="eName" href="#" target="_blank" rel="noopener" class="block font-semibold text-sm truncate hover:text-brand-400 transition">—</a>
-        <p id="eSong" class="text-xs text-slate-300 truncate song-update">Transmisión en vivo</p>
-        <a id="eBrand" href="#" target="_blank" rel="noopener" class="inline-flex items-center gap-1 text-[10px] text-slate-500 hover:text-brand-400 transition mt-0.5">
-          <span class="live-dot" style="width:5px;height:5px;"></span> Sonando en RadioWave
-        </a>
-      </div>
-
-      <!-- Controles (solo play, mute y volumen) -->
-      <div class="flex items-center gap-2 shrink-0">
-        <button id="ePlay" class="w-11 h-11 rounded-full bg-brand-500 hover:bg-brand-600 grid place-items-center shadow-lg shadow-brand-500/30 transition">
-          <i id="ePlayIcon" data-lucide="play" class="w-5 h-5 text-white"></i>
-        </button>
-        <button id="eMute" class="w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 grid place-items-center transition">
-          <i id="eMuteIcon" data-lucide="volume-2" class="w-4 h-4"></i>
-        </button>
-        <input id="eVol" type="range" min="0" max="1" step="0.01" value="0.8" class="range-vol w-16 hidden sm:block" />
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL AUTH -->
   <div id="authModal" class="hidden fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm grid place-items-center p-4">
     <div class="modal-fade bg-surface-900 border border-white/10 rounded-2xl w-full max-w-md p-6 relative">
       <button onclick="window.closeAuth()" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 grid place-items-center">
-        <i data-lucide="x" class="w-4 h-4"></i>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
       </button>
       <div class="flex gap-1 p-1 bg-white/5 rounded-xl mb-6">
         <button data-auth-tab="login"    class="auth-tab flex-1 py-2 rounded-lg text-sm font-medium">Iniciar</button>
@@ -293,7 +270,9 @@
     </div>
   </div>
 
-  <!-- MODAL COMPARTIR -->
+  <!-- ========================================================= -->
+  <!-- MODAL COMPARTIR (con preview de player.html)              -->
+  <!-- ========================================================= -->
   <div id="shareModal" class="hidden fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm grid place-items-center p-4">
     <div class="modal-fade bg-surface-900 border border-white/10 rounded-2xl w-full max-w-lg p-6">
       <div class="flex items-start justify-between mb-4">
@@ -302,25 +281,58 @@
           <p id="shareName" class="text-sm text-slate-400"></p>
         </div>
         <button onclick="window.closeShare()" class="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 grid place-items-center">
-          <i data-lucide="x" class="w-4 h-4"></i>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
       </div>
+
+      <!-- Íconos de redes sociales (SVG inline = nunca se rompen) -->
       <div class="grid grid-cols-5 gap-3 mb-6">
-        <button data-share="whatsapp" class="share-btn aspect-square rounded-xl bg-white/5 hover:bg-green-500/20 grid place-items-center"><i data-lucide="message-circle" class="w-5 h-5 text-green-400"></i></button>
-        <button data-share="telegram" class="share-btn aspect-square rounded-xl bg-white/5 hover:bg-sky-500/20 grid place-items-center"><i data-lucide="send" class="w-5 h-5 text-sky-400"></i></button>
-        <button data-share="facebook" class="share-btn aspect-square rounded-xl bg-white/5 hover:bg-blue-500/20 grid place-items-center"><i data-lucide="facebook" class="w-5 h-5 text-blue-400"></i></button>
-        <button data-share="twitter"  class="share-btn aspect-square rounded-xl bg-white/5 hover:bg-slate-300/20 grid place-items-center"><i data-lucide="twitter" class="w-5 h-5 text-slate-200"></i></button>
-        <button data-share="copy"     class="share-btn aspect-square rounded-xl bg-white/5 hover:bg-brand-500/20 grid place-items-center"><i data-lucide="link" class="w-5 h-5 text-brand-400"></i></button>
+        <button data-share="whatsapp" class="share-btn aspect-square rounded-xl bg-white/5 hover:bg-green-500/20 grid place-items-center" title="WhatsApp">
+          <svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+        </button>
+        <button data-share="telegram" class="share-btn aspect-square rounded-xl bg-white/5 hover:bg-sky-500/20 grid place-items-center" title="Telegram">
+          <svg class="w-5 h-5 text-sky-400" fill="currentColor" viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+        </button>
+        <button data-share="facebook" class="share-btn aspect-square rounded-xl bg-white/5 hover:bg-blue-500/20 grid place-items-center" title="Facebook">
+          <svg class="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+        </button>
+        <button data-share="twitter" class="share-btn aspect-square rounded-xl bg-white/5 hover:bg-slate-300/20 grid place-items-center" title="X (Twitter)">
+          <svg class="w-5 h-5 text-slate-200" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        </button>
+        <button data-share="copy" class="share-btn aspect-square rounded-xl bg-white/5 hover:bg-brand-500/20 grid place-items-center" title="Copiar enlace">
+          <svg class="w-5 h-5 text-brand-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+        </button>
       </div>
-      <div class="border-t border-white/5 pt-4">
-        <h4 class="text-sm font-semibold mb-2 flex items-center gap-2"><i data-lucide="code" class="w-4 h-4"></i> Insertar como widget (iFrame 120px)</h4>
-        <textarea id="embedCode" readonly class="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-xs font-mono text-slate-300 h-24 resize-none"></textarea>
-        <button onclick="window.copyEmbed()" class="mt-2 text-xs text-brand-400 hover:text-brand-300">Copiar código</button>
+
+      <!-- Código embed + Vista previa del player -->
+      <div class="border-t border-white/5 pt-4 space-y-4">
+        <div>
+          <h4 class="text-sm font-semibold mb-2 flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+            Código para insertar (iFrame)
+          </h4>
+          <textarea id="embedCode" readonly class="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-xs font-mono text-slate-300 h-20 resize-none"></textarea>
+          <button onclick="window.copyEmbed()" class="mt-2 text-xs text-brand-400 hover:text-brand-300 flex items-center gap-1">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+            Copiar código
+          </button>
+        </div>
+
+        <!-- VISTA PREVIA en tiempo real (carga player.html) -->
+        <div>
+          <h4 class="text-sm font-semibold mb-2 flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+            Vista previa (así se verá en otros sitios)
+          </h4>
+          <div id="embedPreview" class="bg-black/40 border border-white/10 rounded-lg p-2" style="min-height: 130px;"></div>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- MODAL RADIO -->
+  <!-- ========================================================= -->
+  <!-- MODAL RADIO (crear/editar emisora)                        -->
+  <!-- ========================================================= -->
   <div id="radioModal" class="hidden fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm grid place-items-center p-4 overflow-y-auto">
     <div class="modal-fade bg-surface-900 border border-white/10 rounded-2xl w-full max-w-2xl p-6 my-8">
       <div class="flex items-start justify-between mb-4">
@@ -329,7 +341,7 @@
           <p id="genreCount" class="text-xs text-slate-400 mt-1">Selecciona al menos 3 géneros</p>
         </div>
         <button onclick="window.closeRadioModal()" class="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 grid place-items-center">
-          <i data-lucide="x" class="w-4 h-4"></i>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
       </div>
       <form id="formRadio" class="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -345,9 +357,10 @@
             <div class="flex-1">
               <input type="file" id="logoInput" accept="image/*" class="hidden">
               <label for="logoInput" class="logo-upload-btn inline-block cursor-pointer">
-                <i data-lucide="upload" class="w-4 h-4 inline-block mr-2"></i>Elegir imagen
+                <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+                Elegir imagen
               </label>
-              <p class="text-xs text-slate-500 mt-2">Se comprime a 200×200 (calidad 0.5) y se guarda en Firestore — plan gratis.</p>
+              <p class="text-xs text-slate-500 mt-2">Se comprime a 200×200 y se guarda en Firestore (plan gratis).</p>
               <p id="logoStatus" class="text-xs text-slate-400 mt-1"></p>
             </div>
           </div>
@@ -378,53 +391,36 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import {
-      getAuth, onAuthStateChanged, signInWithEmailAndPassword,
-      createUserWithEmailAndPassword, signOut, sendPasswordResetEmail
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import {
-      getFirestore, collection, doc, setDoc, updateDoc, deleteDoc,
-      onSnapshot, query, where, orderBy, getDocs, serverTimestamp, getDoc
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, collection, doc, setDoc, updateDoc, deleteDoc, onSnapshot, query, where, orderBy, getDocs, serverTimestamp, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
-      apiKey:            "AIzaSyB3d6Tbek0a-cN831rjt-rOwMn3oZteM7o",
-      authDomain:        "radiowave-1c842.firebaseapp.com",
-      databaseURL:       "https://radiowave-1c842-default-rtdb.firebaseio.com",
-      projectId:         "radiowave-1c842",
-      storageBucket:     "radiowave-1c842.firebasestorage.app",
+      apiKey: "AIzaSyB3d6Tbek0a-cN831rjt-rOwMn3oZteM7o",
+      authDomain: "radiowave-1c842.firebaseapp.com",
+      projectId: "radiowave-1c842",
+      storageBucket: "radiowave-1c842.firebasestorage.app",
       messagingSenderId: "432575974008",
-      appId:             "1:432575974008:web:c90af5206c0a8045193b8d"
+      appId: "1:432575974008:web:c90af5206c0a8045193b8d"
     };
 
-    const app  = initializeApp(firebaseConfig);
+    const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    const db   = getFirestore(app);
+    const db = getFirestore(app);
 
     const DEFAULT_BANNER_URL = "https://image.jimcdn.com/app/cms/image/transf/dimension=2301x/path/sc40a039d49acf98a/backgroundarea/i2f02cd984ea6c9de/version/1625686183/image.jpg";
 
-    const GENRES = [
-      'Pop','Rock','Reggaetón','Salsa','Electrónica','Clásica','Jazz',
-      'Noticias','Deportes','Country','Urbana','Religiosa','Tropical',
-      'Baladas','Cumbia','Bachata','Merengue','Metal','Indie','Hip-Hop',
-      'R&B','Folk','Latina','K-Pop','Infantil','Cultura','Variada'
-    ];
-
-    // Detección temprana de modo embed
-    const urlParams = new URLSearchParams(location.search);
-    const EMBED_MODE = urlParams.get('embed') === '1';
-    const LISTEN_ID  = urlParams.get('listen');
+    const GENRES = ['Pop','Rock','Reggaetón','Salsa','Electrónica','Clásica','Jazz','Noticias','Deportes','Country','Urbana','Religiosa','Tropical','Baladas','Cumbia','Bachata','Merengue','Metal','Indie','Hip-Hop','R&B','Folk','Latina','K-Pop','Infantil','Cultura','Variada'];
 
     const state = {
       user: null, userData: null,
       radios: [], myRadios: [], favorites: [],
       currentRadio: null, currentView: 'home',
-      currentGenre: null, searchQuery: '', shareRadio: null,
+      currentGenre: null, globalSearch: '',
       selectedGenres: [], metadataInterval: null, lastSong: null,
-      selectedLogoFile: null, embedMode: EMBED_MODE
+      selectedLogoFile: null
     };
 
-    const $  = (sel, root = document) => root.querySelector(sel);
+    const $ = (sel, root = document) => root.querySelector(sel);
     const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
     const appEl = $('#app');
 
@@ -433,23 +429,15 @@
     // ============================================================
     function showToast(msg, type = 'success') {
       const t = $('#toast');
-      t.className = `fixed top-20 right-4 z-[70] px-4 py-3 rounded-xl shadow-lg text-sm font-medium modal-fade ${
-        type === 'error' ? 'bg-red-500/90 text-white' :
-        type === 'info'  ? 'bg-blue-500/90 text-white' :
-                           'bg-green-500/90 text-white'
-      }`;
+      t.className = `fixed top-20 right-4 z-[70] px-4 py-3 rounded-xl shadow-lg text-sm font-medium modal-fade ${type === 'error' ? 'bg-red-500/90 text-white' : type === 'info' ? 'bg-blue-500/90 text-white' : 'bg-green-500/90 text-white'}`;
       t.textContent = msg;
       t.classList.remove('hidden');
       setTimeout(() => t.classList.add('hidden'), 3500);
     }
 
-    function escapeHtml(s = '') {
-      return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-    }
+    function escapeHtml(s = '') { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
-    function renderIcons() { if (window.lucide) lucide.createIcons(); }
-
-    // Búsqueda sin tildes ni mayúsculas (NFD + strip diacríticos)
+    // Normaliza texto: quita tildes y pasa a minúsculas (para búsqueda)
     const norm = (s = '') => String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
     function normalizeGenres(g) {
@@ -466,28 +454,29 @@
       return /^https?:\/\//i.test(u) ? u : 'https://' + u;
     }
 
-    // Íconos de redes sociales CONDICIONALES (solo si existe la URL)
+    // Íconos SVG inline de redes sociales (nunca se rompen)
+    const SOCIAL_ICONS = {
+      globe: '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+      facebook: '<svg fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>',
+      instagram: '<svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>',
+      twitter: '<svg fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>'
+    };
+
     function socialLinks(r) {
       const items = [];
-      if (r.webUrl)    items.push(['globe',    r.webUrl,    'Sitio web']);
-      if (r.facebook)  items.push(['facebook', r.facebook, 'Facebook']);
-      if (r.instagram) items.push(['instagram',r.instagram,'Instagram']);
-      if (r.twitter)   items.push(['twitter',  r.twitter,  'X / Twitter']);
+      if (r.webUrl)    items.push(['globe',     r.webUrl,    'Sitio web']);
+      if (r.facebook)  items.push(['facebook',  r.facebook,  'Facebook']);
+      if (r.instagram) items.push(['instagram', r.instagram, 'Instagram']);
+      if (r.twitter)   items.push(['twitter',   r.twitter,   'X / Twitter']);
       if (!items.length) return '';
       return `<div class="flex gap-1.5 mt-2">${items.map(([ic, url, title]) =>
-        `<a href="${escapeHtml(fixUrl(url))}" target="_blank" rel="noopener" title="${title}" class="social-ico">
-           <i data-lucide="${ic}" class="w-3 h-3 text-slate-300"></i>
-         </a>`).join('')}</div>`;
+        `<a href="${escapeHtml(fixUrl(url))}" target="_blank" rel="noopener" title="${title}" class="social-ico text-slate-300 hover:text-white">${SOCIAL_ICONS[ic]}</a>`
+      ).join('')}</div>`;
     }
 
-    // PURGA DE BÚFER: fuerza borde en vivo agregando timestamp
     function liveUrl(url) {
       const sep = url.includes('?') ? '&' : '?';
       return `${url}${sep}t=${Date.now()}`;
-    }
-
-    function portalUrl(radioId) {
-      return `${location.origin}${location.pathname}?listen=${radioId}`;
     }
 
     // ============================================================
@@ -508,7 +497,9 @@
       } else {
         state.userData = null; state.favorites = []; state.myRadios = [];
       }
-      if (!state.embedMode) { renderAuthArea(); renderView(); updatePlayerFavButton(); }
+      renderAuthArea();
+      renderView();
+      updatePlayerFavButton();
     });
 
     function renderAuthArea() {
@@ -518,19 +509,18 @@
         el.innerHTML = `
           <div class="flex items-center gap-2 bg-white/5 border border-white/10 rounded-full pl-1 pr-3 py-1">
             <div class="w-8 h-8 rounded-full bg-gradient-to-br from-brand-500 to-purple-600 grid place-items-center text-white text-xs font-bold">${initial}</div>
-            <span class="text-sm font-medium hidden sm:block">${escapeHtml(state.userData?.name || state.user.email)}</span>
+            <span class="text-sm font-medium hidden md:block">${escapeHtml(state.userData?.name || state.user.email)}</span>
           </div>
-          <button onclick="window.doLogout()" class="w-9 h-9 rounded-full bg-white/5 hover:bg-red-500/20 hover:text-red-400 grid place-items-center transition">
-            <i data-lucide="log-out" class="w-4 h-4"></i>
+          <button onclick="window.doLogout()" class="w-9 h-9 rounded-full bg-white/5 hover:bg-red-500/20 hover:text-red-400 grid place-items-center transition" title="Cerrar sesión">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
           </button>`;
         $$('.auth-only').forEach(e => e.classList.remove('hidden'));
       } else {
         el.innerHTML = `
-          <button onclick="window.openAuth('login')" class="btn-secondary !py-2 !px-4 text-sm hidden sm:block">Iniciar</button>
-          <button onclick="window.openAuth('register')" class="btn-primary !py-2 !px-4 text-sm">Registrarse</button>`;
+          <button onclick="window.openAuth('login')" class="btn-secondary !py-2 !px-3 text-xs hidden sm:block">Iniciar</button>
+          <button onclick="window.openAuth('register')" class="btn-primary !py-2 !px-3 text-xs">Registrarse</button>`;
         $$('.auth-only').forEach(e => e.classList.add('hidden'));
       }
-      renderIcons();
     }
 
     window.openAuth = (tab = 'login') => {
@@ -585,24 +575,13 @@
       } catch (err) { showAuthError(err.message || traducirError(err.code)); }
     });
 
-    function showAuthError(msg) {
-      $('#authError').textContent = msg;
-      $('#authError').classList.remove('hidden');
-      $('#authSuccess').classList.add('hidden');
-    }
-    function showAuthSuccess(msg) {
-      $('#authSuccess').textContent = msg;
-      $('#authSuccess').classList.remove('hidden');
-      $('#authError').classList.add('hidden');
-    }
+    function showAuthError(msg) { $('#authError').textContent = msg; $('#authError').classList.remove('hidden'); $('#authSuccess').classList.add('hidden'); }
+    function showAuthSuccess(msg) { $('#authSuccess').textContent = msg; $('#authSuccess').classList.remove('hidden'); $('#authError').classList.add('hidden'); }
     function traducirError(code) {
       const map = {
-        'auth/invalid-email': 'Correo inválido.',
-        'auth/user-not-found': 'Usuario no encontrado.',
-        'auth/wrong-password': 'Contraseña incorrecta.',
-        'auth/email-already-in-use': 'Ese correo ya está registrado.',
-        'auth/weak-password': 'Contraseña muy débil (mínimo 6 caracteres).',
-        'auth/invalid-credential': 'Credenciales inválidas.'
+        'auth/invalid-email': 'Correo inválido.', 'auth/user-not-found': 'Usuario no encontrado.',
+        'auth/wrong-password': 'Contraseña incorrecta.', 'auth/email-already-in-use': 'Ese correo ya está registrado.',
+        'auth/weak-password': 'Contraseña muy débil (mínimo 6 caracteres).', 'auth/invalid-credential': 'Credenciales inválidas.'
       };
       return map[code] || 'Error: ' + code;
     }
@@ -612,12 +591,9 @@
     // ============================================================
     onSnapshot(query(collection(db, 'radios'), orderBy('createdAt', 'desc')), (snap) => {
       state.radios = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      console.log('📻 Radios cargadas:', state.radios.length);
-      if (!state.embedMode) { renderView(); updatePlayerFavButton(); }
-    }, (err) => {
-      console.error('❌ Error radios:', err);
-      if (!state.embedMode) showToast('Error al cargar emisoras: ' + err.message, 'error');
-    });
+      renderView();
+      updatePlayerFavButton();
+    }, (err) => { console.error('❌ Error radios:', err); showToast('Error al cargar emisoras: ' + err.message, 'error'); });
 
     function listenMyRadios() {
       if (!state.user) return;
@@ -626,7 +602,7 @@
         query(collection(db, 'radios'), where('ownerId', '==', state.user.uid)),
         (snap) => {
           state.myRadios = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-          if (state.currentView === 'dashboard' && !state.embedMode) renderView();
+          if (state.currentView === 'dashboard') renderView();
         },
         (err) => { console.error('❌ Error mis radios:', err); showToast('Error: ' + err.message, 'error'); }
       );
@@ -639,7 +615,8 @@
         collection(db, 'users', state.user.uid, 'favorites'),
         (snap) => {
           state.favorites = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-          if (!state.embedMode) { renderView(); updatePlayerFavButton(); }
+          renderView();
+          updatePlayerFavButton();
         },
         (err) => { console.error('❌ Error favoritos:', err); showToast('Error: ' + err.message, 'error'); }
       );
@@ -656,22 +633,16 @@
           showToast('Quitado de favoritos', 'info');
         } else {
           await setDoc(ref, {
-            radioId: radio.id, name: radio.name,
-            logoUrl: radio.logoUrl || '',
-            genre: normalizeGenres(radio.genre),
-            streamUrl: radio.streamUrl,
-            savedAt: serverTimestamp()
+            radioId: radio.id, name: radio.name, logoUrl: radio.logoUrl || '',
+            genre: normalizeGenres(radio.genre), streamUrl: radio.streamUrl, savedAt: serverTimestamp()
           });
           showToast('Añadido a favoritos ❤️');
         }
-      } catch (err) {
-        console.error('❌ Error favorito:', err);
-        showToast('Error: ' + err.message, 'error');
-      }
+      } catch (err) { showToast('Error: ' + err.message, 'error'); }
     }
 
     // ============================================================
-    // COMPRESIÓN DE LOGO — 200x200 máx, calidad 0.5 (Firestore ligero)
+    // COMPRESIÓN DE LOGO (200x200, q 0.5)
     // ============================================================
     function fileToImage(file) {
       return new Promise((resolve, reject) => {
@@ -682,7 +653,7 @@
           img.onerror = () => reject(new Error('Imagen inválida'));
           img.src = e.target.result;
         };
-        reader.onerror = () => reject(new Error('No se pudo leer el archivo'));
+        reader.onerror = () => reject(new Error('No se pudo leer'));
         reader.readAsDataURL(file);
       });
     }
@@ -699,7 +670,6 @@
 
     async function compressToDataURL(file) {
       const img = await fileToImage(file);
-      // Estricto: máximo 200x200, calidad 0.5 (con fallbacks menores si aún pesa)
       const levels = [ { size: 200, q: 0.5 }, { size: 160, q: 0.45 }, { size: 140, q: 0.4 } ];
       let last = null;
       for (const lv of levels) {
@@ -708,10 +678,9 @@
         if (!dataUrl.startsWith('data:image/webp')) dataUrl = canvas.toDataURL('image/jpeg', lv.q);
         last = dataUrl;
         const kb = dataUrl.length / 1024;
-        console.log(`🗜️ Logo ${lv.size}px q${lv.q} → ${kb.toFixed(1)} KB`);
         if (kb <= 150) return dataUrl;
       }
-      if (last.length / 1024 > 900) throw new Error('Imagen demasiado pesada incluso comprimida');
+      if (last.length / 1024 > 900) throw new Error('Imagen demasiado pesada');
       return last;
     }
 
@@ -724,43 +693,26 @@
       let logoUrl = data.existingLogoUrl || '';
       if (state.selectedLogoFile) {
         logoUrl = await compressToDataURL(state.selectedLogoFile);
-        console.log('📦 Logo final:', (logoUrl.length / 1024).toFixed(1), 'KB');
       }
       const payload = {
-        name: data.name,
-        streamUrl: data.streamUrl,
-        logoUrl,
+        name: data.name, streamUrl: data.streamUrl, logoUrl,
         bannerUrl: DEFAULT_BANNER_URL,
-        genre: data.genre,
-        country: data.country,
-        city: data.city || '',
-        webUrl: fixUrl(data.webUrl || ''),
-        facebook: fixUrl(data.facebook || ''),
-        instagram: fixUrl(data.instagram || ''),
-        twitter: fixUrl(data.twitter || ''),
-        ownerId: auth.currentUser.uid,
-        ownerName: state.userData?.name || '',
+        genre: data.genre, country: data.country, city: data.city || '',
+        webUrl: fixUrl(data.webUrl || ''), facebook: fixUrl(data.facebook || ''),
+        instagram: fixUrl(data.instagram || ''), twitter: fixUrl(data.twitter || ''),
+        ownerId: auth.currentUser.uid, ownerName: state.userData?.name || '',
         updatedAt: serverTimestamp()
       };
-      if (data.id) {
-        await updateDoc(doc(db, 'radios', data.id), payload);
-        console.log('✏️ Radio actualizada:', data.id);
-      } else {
-        payload.createdAt = serverTimestamp();
-        await setDoc(doc(db, 'radios', radioId), payload);
-        console.log('➕ Radio creada:', radioId);
-      }
+      if (data.id) await updateDoc(doc(db, 'radios', data.id), payload);
+      else { payload.createdAt = serverTimestamp(); await setDoc(doc(db, 'radios', radioId), payload); }
     }
 
     async function deleteRadio(id) {
-      if (!confirm('¿Estás seguro de eliminar esta radio? Esta acción no se puede deshacer.')) return;
+      if (!confirm('¿Estás seguro de eliminar esta radio?')) return;
       try {
         await deleteDoc(doc(db, 'radios', id));
         showToast('Emisora eliminada correctamente');
-      } catch (err) {
-        console.error('❌ Error al eliminar:', err);
-        showToast('Error al eliminar: ' + err.message, 'error');
-      }
+      } catch (err) { showToast('Error al eliminar: ' + err.message, 'error'); }
     }
 
     // ============================================================
@@ -770,24 +722,20 @@
       getBaseUrl(streamUrl) {
         try {
           const url = new URL(streamUrl);
-          const path = url.pathname.replace(/\/[^\/]*\.[a-z0-9]+$/i, '').replace(/\/$/, '');
-          return url.origin + path;
+          return url.origin + url.pathname.replace(/\/[^\/]*\.[a-z0-9]+$/i, '').replace(/\/$/, '');
         } catch { return null; }
       },
       async fetch(streamUrl) {
         const base = this.getBaseUrl(streamUrl);
         if (!base) return null;
-        const endpoints = [
-          `${base}/status-json.xsl`, `${base}/stats?json=1`, `${base}/statistics?json=1`,
-          `${base}/api/live/info`, `${base}/nowplaying`
-        ];
+        const endpoints = [`${base}/status-json.xsl`, `${base}/stats?json=1`, `${base}/statistics?json=1`, `${base}/api/live/info`, `${base}/nowplaying`];
         for (const url of endpoints) {
           try {
             const res = await fetch(url, { mode: 'cors', signal: AbortSignal.timeout(4000) });
             if (!res.ok) continue;
             const parsed = this.parse(await res.json());
             if (parsed) return parsed;
-          } catch (e) { /* siguiente */ }
+          } catch (e) {}
         }
         return null;
       },
@@ -795,73 +743,59 @@
         if (!data) return null;
         if (data.icestats?.source) {
           const sources = Array.isArray(data.icestats.source) ? data.icestats.source : [data.icestats.source];
-          for (const src of sources) {
-            if (src.title) return { title: src.artist ? `${src.artist} - ${src.title}` : src.title };
-          }
+          for (const src of sources) if (src.title) return { title: src.artist ? `${src.artist} - ${src.title}` : src.title };
         }
         if (data.songtitle || data.title) return { title: data.songtitle || data.title };
-        if (data.now_playing?.song) {
-          const s = data.now_playing.song;
-          return { title: `${s.artist || ''} - ${s.title || ''}`.trim() };
-        }
+        if (data.now_playing?.song) { const s = data.now_playing.song; return { title: `${s.artist || ''} - ${s.title || ''}`.trim() }; }
         return null;
       }
     };
 
     // ============================================================
-    // AUDIO (compartido por player principal y embed)
+    // AUDIO PLAYER
     // ============================================================
     const audio = new Audio();
     audio.preload = 'none';
-
-    // PERSISTENCIA DE VOLUMEN (localStorage — solo preferencia de UI)
     const savedVol = localStorage.getItem('rw_volume');
     audio.volume = savedVol !== null ? parseFloat(savedVol) : 0.8;
-
     let reconnectTimer = null;
 
     function syncVolume(v) {
       audio.volume = v;
       localStorage.setItem('rw_volume', String(v));
       $('#volSlider').value = v;
-      $('#eVol').value = v;
     }
 
-    function setPlayIcons(playing) {
-      $('#btnPlayIcon').setAttribute('data-lucide', playing ? 'pause' : 'play');
-      $('#ePlayIcon').setAttribute('data-lucide', playing ? 'pause' : 'play');
-      renderIcons();
+    function setPlayIcon(playing) {
+      $('#btnPlayIcon').innerHTML = playing
+        ? '<path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>'
+        : '<path d="M8 5v14l11-7z"/>';
     }
 
-    function setMuteIcons() {
-      const ic = audio.muted ? 'volume-x' : 'volume-2';
-      $('#btnMuteIcon').setAttribute('data-lucide', ic);
-      $('#eMuteIcon').setAttribute('data-lucide', ic);
-      renderIcons();
+    function setMuteIcon() {
+      $('#btnMuteIcon').innerHTML = audio.muted
+        ? '<path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>'
+        : '<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>';
     }
 
     function setStatus(msg) { $('#pStatus').textContent = msg; }
 
-    // Actualiza canción en AMBOS players
     function updateSongDisplay(text) {
       const clean = (text || 'Transmisión en vivo').trim();
       if (clean === state.lastSong) return;
       state.lastSong = clean;
-      ['#pSong', '#eSong'].forEach(sel => {
-        const el = $(sel);
-        if (!el) return;
-        el.classList.remove('song-update');
-        void el.offsetWidth;
-        el.textContent = clean;
-        el.classList.add('song-update');
-      });
+      const el = $('#pSong');
+      if (!el) return;
+      el.classList.remove('song-update');
+      void el.offsetWidth;
+      el.textContent = clean;
+      el.classList.add('song-update');
     }
 
     function startMetadataPolling() {
       stopMetadataPolling();
       if (!state.currentRadio) return;
       const poll = async () => {
-        if (!state.currentRadio) return;
         try {
           const meta = await MetadataService.fetch(state.currentRadio.streamUrl);
           updateSongDisplay(meta?.title || 'Transmisión en vivo');
@@ -870,23 +804,19 @@
       poll();
       state.metadataInterval = setInterval(poll, 15000);
     }
-    function stopMetadataPolling() {
-      if (state.metadataInterval) { clearInterval(state.metadataInterval); state.metadataInterval = null; }
-    }
+    function stopMetadataPolling() { if (state.metadataInterval) { clearInterval(state.metadataInterval); state.metadataInterval = null; } }
 
-    // REPRODUCIR con PURGA DE BÚFER
     function playRadio(radio) {
       if (!radio) return;
       if (state.currentRadio?.id === radio.id && !audio.paused) { audio.pause(); return; }
       state.currentRadio = radio;
-      audio.src = liveUrl(radio.streamUrl); // ← purga: siempre borde en vivo
-      audio.play().catch(err => { console.warn('Autoplay bloqueado o error:', err.message); setStatus('Pulsa ▶ para escuchar'); });
-      if (!state.embedMode) $('#audioPlayer').classList.remove('hidden');
+      audio.src = liveUrl(radio.streamUrl);
+      audio.play().catch(() => setStatus('Pulsa ▶ para escuchar'));
+      $('#audioPlayer').classList.remove('hidden');
       updatePlayerUI();
       startMetadataPolling();
     }
 
-    // Reanudar TAMBIÉN purga el búfer
     function resumeLive() {
       if (!state.currentRadio) return;
       audio.src = liveUrl(state.currentRadio.streamUrl);
@@ -896,52 +826,30 @@
     function updatePlayerUI() {
       const r = state.currentRadio;
       if (!r) return;
-      // Player principal
       $('#pName').textContent = r.name || 'Radio';
       $('#pGenre').textContent = [formatGenres(r.genre), r.city, r.country].filter(Boolean).join(' · ');
       const logo = $('#pLogo');
       if (r.logoUrl) { logo.src = r.logoUrl; logo.classList.remove('hidden'); $('#pIcon').classList.add('hidden'); }
       else { logo.classList.add('hidden'); $('#pIcon').classList.remove('hidden'); }
       $('#pLive').classList.remove('hidden'); $('#pLive').classList.add('flex');
-      // Player embed
-      $('#eName').textContent = r.name || 'Radio';
-      $('#eName').href = portalUrl(r.id);
-      $('#eBrand').href = portalUrl(r.id);
-      const eLogo = $('#eLogo');
-      if (r.logoUrl) { eLogo.src = r.logoUrl; eLogo.classList.remove('hidden'); $('#eIcon').classList.add('hidden'); }
-      else { eLogo.classList.add('hidden'); $('#eIcon').classList.remove('hidden'); }
-
       updateSongDisplay('Transmisión en vivo');
       updatePlayerFavButton();
-      renderIcons();
     }
 
     function updatePlayerFavButton() {
       const icon = $('#btnPlayerFavIcon');
       if (!icon || !state.currentRadio) return;
       const fav = isFavorite(state.currentRadio.id);
-      icon.classList.toggle('fill-red-500', fav);
-      icon.classList.toggle('text-red-500', fav);
-      icon.classList.toggle('text-slate-300', !fav);
-      renderIcons();
+      if (fav) { icon.setAttribute('fill', 'currentColor'); icon.classList.add('text-red-500'); icon.classList.remove('text-slate-300'); }
+      else { icon.setAttribute('fill', 'none'); icon.classList.remove('text-red-500'); icon.classList.add('text-slate-300'); }
     }
 
-    audio.addEventListener('playing', () => {
-      clearTimeout(reconnectTimer);
-      setStatus('Transmitiendo');
-      setPlayIcons(true);
-      startMetadataPolling();
-    });
-    audio.addEventListener('pause', () => { setPlayIcons(false); stopMetadataPolling(); });
+    audio.addEventListener('playing', () => { clearTimeout(reconnectTimer); setStatus('Transmitiendo'); setPlayIcon(true); startMetadataPolling(); });
+    audio.addEventListener('pause', () => { setPlayIcon(false); stopMetadataPolling(); });
     audio.addEventListener('waiting', () => setStatus('Cargando...'));
-    audio.addEventListener('error', () => {
-      setStatus('Reconectando...');
-      clearTimeout(reconnectTimer);
-      reconnectTimer = setTimeout(() => { if (audio.src && state.currentRadio) audio.load(); }, 5000);
-    });
+    audio.addEventListener('error', () => { setStatus('Reconectando...'); clearTimeout(reconnectTimer); reconnectTimer = setTimeout(() => { if (audio.src && state.currentRadio) audio.load(); }, 5000); });
     audio.addEventListener('stalled', () => setStatus('Reconectando...'));
 
-    // ---- Controles player principal ----
     $('#btnPlay').addEventListener('click', () => {
       if (!state.currentRadio) { if (state.radios.length) playRadio(state.radios[0]); return; }
       audio.paused ? resumeLive() : audio.pause();
@@ -953,25 +861,22 @@
       setTimeout(() => icon.classList.remove('heart-pop'), 350);
       await toggleFavorite(state.currentRadio);
     });
-    $('#btnShare').addEventListener('click', () => {
-      if (state.currentRadio) window.openShare(state.currentRadio);
-    });
-    $('#btnMute').addEventListener('click', () => { audio.muted = !audio.muted; setMuteIcons(); });
+    $('#btnShare').addEventListener('click', () => { if (state.currentRadio) window.openShare(state.currentRadio); });
+    $('#btnMute').addEventListener('click', () => { audio.muted = !audio.muted; setMuteIcon(); });
     $('#volSlider').addEventListener('input', (e) => syncVolume(+e.target.value));
-    $('#btnClose').addEventListener('click', () => {
-      audio.pause(); audio.src = '';
-      state.currentRadio = null;
-      stopMetadataPolling();
-      $('#audioPlayer').classList.add('hidden');
-    });
+    $('#btnClose').addEventListener('click', () => { audio.pause(); audio.src = ''; state.currentRadio = null; stopMetadataPolling(); $('#audioPlayer').classList.add('hidden'); });
 
-    // ---- Controles player embed ----
-    $('#ePlay').addEventListener('click', () => {
-      if (!state.currentRadio) return;
-      audio.paused ? resumeLive() : audio.pause();
+    // ============================================================
+    // BUSCADOR GLOBAL (en header, filtra en tiempo real)
+    // ============================================================
+    $('#globalSearch').addEventListener('input', (e) => {
+      state.globalSearch = e.target.value;
+      // Si escribe algo, ir automáticamente a vista explorar/resultados
+      if (state.globalSearch.trim()) {
+        state.currentView = 'explore';
+      }
+      renderView();
     });
-    $('#eMute').addEventListener('click', () => { audio.muted = !audio.muted; setMuteIcons(); });
-    $('#eVol').addEventListener('input', (e) => syncVolume(+e.target.value));
 
     // ============================================================
     // SPA ROUTER + VISTAS
@@ -980,19 +885,34 @@
       const v = btn.dataset.nav;
       if (['favorites','dashboard'].includes(v) && !state.user) { window.openAuth('login'); return; }
       state.currentView = v;
+      // Limpiar búsqueda global si se va a otra vista distinta de explore
+      if (v !== 'explore') {
+        state.globalSearch = '';
+        $('#globalSearch').value = '';
+      }
       renderView();
     }));
 
     function renderView() {
-      if (state.embedMode) return; // en embed NO se renderiza el portal
       $$('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.nav === state.currentView));
       const v = state.currentView;
       if (v === 'home')      renderHome();
-      if (v === 'explore')   renderExplore();
-      if (v === 'favorites') renderFavorites();
-      if (v === 'dashboard') renderDashboard();
-      renderIcons();
+      else if (v === 'explore')   renderExplore();
+      else if (v === 'favorites') renderFavorites();
+      else if (v === 'dashboard') renderDashboard();
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Búsqueda compartida (global + vista explorar)
+    function filteredRadios() {
+      const q = norm(state.globalSearch.trim());
+      if (!q) return state.radios;
+      return state.radios.filter(r =>
+        norm(r.name).includes(q) ||
+        normalizeGenres(r.genre).some(g => norm(g).includes(q)) ||
+        norm(r.country || '').includes(q) ||
+        norm(r.city || '').includes(q)
+      );
     }
 
     function renderHome() {
@@ -1040,45 +960,40 @@
       $$('.genre-btn').forEach(b => b.addEventListener('click', () => {
         state.currentGenre = b.dataset.genre || null;
         renderHome();
-        renderIcons();
       }));
     }
 
     function renderExplore() {
+      const results = filteredRadios();
       appEl.innerHTML = `
-        <h2 class="text-3xl font-bold mb-6">Explorar</h2>
-        <div class="relative mb-6">
-          <i data-lucide="search" class="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"></i>
-          <input id="searchInput" type="search" placeholder="Busca por nombre, género, país o ciudad (ignora tildes)..."
-                 class="input !pl-12 !py-3 !text-base" value="${escapeHtml(state.searchQuery)}">
-        </div>
+        <h2 class="text-3xl font-bold mb-2">Explorar emisoras</h2>
+        <p class="text-slate-400 text-sm mb-6">Usa el buscador del menú superior para filtrar por nombre, género o ubicación.</p>
+
+        ${state.globalSearch.trim() ? `
+          <div class="mb-4 flex items-center gap-2">
+            <span class="text-sm text-slate-400">Resultados para:</span>
+            <span class="text-sm font-semibold text-brand-400">"${escapeHtml(state.globalSearch)}"</span>
+            <span class="text-xs text-slate-500">(${results.length})</span>
+          </div>
+        ` : ''}
+
         <div id="searchResults" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          ${filteredRadios().map(radioCard).join('') || '<div class="col-span-full text-center text-slate-400 py-12">Sin resultados</div>'}
+          ${results.length
+            ? results.map(radioCard).join('')
+            : `<div class="col-span-full text-center py-16">
+                 <div class="w-20 h-20 rounded-full bg-white/5 grid place-items-center mx-auto mb-4">
+                   <svg class="w-10 h-10 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                 </div>
+                 <h3 class="text-lg font-semibold mb-2">Sin resultados</h3>
+                 <p class="text-slate-400 text-sm">No encontramos emisoras que coincidan con tu búsqueda.</p>
+                 <p class="text-slate-500 text-xs mt-2">Prueba con otro nombre, género o país.</p>
+               </div>`}
         </div>
       `;
-      $('#searchInput').addEventListener('input', (e) => {
-        state.searchQuery = e.target.value;
-        $('#searchResults').innerHTML = filteredRadios().map(radioCard).join('') || '<div class="col-span-full text-center text-slate-400 py-12">Sin resultados</div>';
-        renderIcons();
-      });
-    }
-
-    // BÚSQUEDA DINÁMICA sin mayúsculas ni tildes
-    function filteredRadios() {
-      const q = norm(state.searchQuery.trim());
-      if (!q) return state.radios;
-      return state.radios.filter(r =>
-        norm(r.name).includes(q) ||
-        normalizeGenres(r.genre).some(g => norm(g).includes(q)) ||
-        norm(r.country).includes(q) ||
-        norm(r.city).includes(q)
-      );
     }
 
     function renderFavorites() {
-      const favRadios = state.favorites
-        .map(f => state.radios.find(r => r.id === f.radioId) || f)
-        .filter(Boolean);
+      const favRadios = state.favorites.map(f => state.radios.find(r => r.id === f.radioId) || f).filter(Boolean);
       appEl.innerHTML = `
         <div class="flex items-center justify-between mb-6">
           <h2 class="text-3xl font-bold">Mis Favoritos</h2>
@@ -1088,7 +1003,7 @@
           ? `<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">${favRadios.map(radioCard).join('')}</div>`
           : `<div class="text-center py-20">
                <div class="w-20 h-20 rounded-full bg-white/5 grid place-items-center mx-auto mb-4">
-                 <i data-lucide="heart" class="w-10 h-10 text-slate-500"></i>
+                 <svg class="w-10 h-10 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
                </div>
                <h3 class="text-lg font-semibold mb-2">Tu colección está vacía</h3>
                <p class="text-slate-400 mb-4">Guarda tus emisoras favoritas y accede desde cualquier dispositivo.</p>
@@ -1096,6 +1011,7 @@
              </div>`}
       `;
     }
+
     window.nav = (v) => { state.currentView = v; renderView(); };
 
     function renderDashboard() {
@@ -1122,7 +1038,7 @@
         ` : `
           <div class="text-center py-16 bg-white/5 rounded-2xl border border-dashed border-white/10">
             <div class="w-20 h-20 rounded-full bg-brand-500/20 grid place-items-center mx-auto mb-4">
-              <i data-lucide="mic" class="w-10 h-10 text-brand-400"></i>
+              <svg class="w-10 h-10 text-brand-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
             </div>
             <h3 class="text-xl font-bold mb-2">Conviértete en Emisora</h3>
             <p class="text-slate-400 max-w-md mx-auto mb-4">Registra tu radio, sube tu streaming y compártelo con el mundo.</p>
@@ -1148,22 +1064,18 @@
       const fav = isFavorite(r.id);
       const isPlaying = state.currentRadio?.id === r.id;
       const genres = normalizeGenres(r.genre);
-      const genreText = genres.length
-        ? genres.slice(0, 2).join(' · ') + (genres.length > 2 ? ` +${genres.length - 2}` : '')
-        : '';
+      const genreText = genres.length ? genres.slice(0, 2).join(' · ') + (genres.length > 2 ? ` +${genres.length - 2}` : '') : '';
       return `
         <div class="group relative bg-white/5 hover:bg-white/10 rounded-2xl overflow-hidden border border-white/5 transition hover:-translate-y-1 hover:shadow-xl hover:shadow-brand-500/10">
           <div class="aspect-square relative overflow-hidden bg-surface-900">
             ${r.logoUrl
               ? `<img src="${r.logoUrl}" alt="${escapeHtml(r.name)}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-                 <div class="absolute inset-0 bg-gradient-to-br from-brand-600 to-purple-700 grid place-items-center hidden"><i data-lucide="radio" class="w-12 h-12 text-white"></i></div>`
-              : `<div class="absolute inset-0 bg-gradient-to-br from-brand-600 to-purple-700 grid place-items-center"><i data-lucide="radio" class="w-12 h-12 text-white"></i></div>`}
+                 <div class="absolute inset-0 bg-gradient-to-br from-brand-600 to-purple-700 grid place-items-center hidden"><svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg></div>`
+              : `<div class="absolute inset-0 bg-gradient-to-br from-brand-600 to-purple-700 grid place-items-center"><svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg></div>`}
 
             <div class="absolute top-2 right-2 z-20">
-              <button data-action="fav" data-id="${r.id}"
-                      class="w-9 h-9 rounded-full bg-black/60 backdrop-blur grid place-items-center hover:bg-black/80 transition"
-                      title="${fav ? 'Quitar de favoritos' : 'Agregar a favoritos'}">
-                <i data-lucide="heart" class="w-4 h-4 ${fav ? 'fill-red-500 text-red-500' : 'text-white'}"></i>
+              <button data-action="fav" data-id="${r.id}" class="w-9 h-9 rounded-full bg-black/60 backdrop-blur grid place-items-center hover:bg-black/80 transition" title="${fav ? 'Quitar' : 'Agregar'}">
+                <svg class="w-4 h-4 ${fav ? 'text-red-500' : 'text-white'}" fill="${fav ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
               </button>
             </div>
 
@@ -1171,7 +1083,7 @@
 
             <div class="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition grid place-items-center opacity-0 group-hover:opacity-100">
               <button data-action="play" data-id="${r.id}" class="w-14 h-14 rounded-full bg-brand-500 hover:bg-brand-600 grid place-items-center shadow-lg">
-                <i data-lucide="play" class="w-6 h-6 text-white"></i>
+                <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
               </button>
             </div>
           </div>
@@ -1179,7 +1091,7 @@
             <div class="flex items-start justify-between gap-2">
               <h3 class="font-semibold truncate">${escapeHtml(r.name)}</h3>
               <button data-action="share" data-id="${r.id}" class="shrink-0 w-7 h-7 rounded-full bg-white/5 hover:bg-white/10 grid place-items-center" title="Compartir">
-                <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
               </button>
             </div>
             <p class="text-xs text-slate-400 truncate">${escapeHtml(genreText)}</p>
@@ -1203,14 +1115,18 @@
             ${socialLinks(r)}
             <div class="flex gap-2 mt-3">
               <button onclick="window.playById('${r.id}')" class="btn-secondary flex-1 !py-2 text-xs">▶ Reproducir</button>
-              <button onclick="window.openRadioModal('${r.id}')" class="btn-secondary !py-2 !px-3 text-xs" title="Editar"><i data-lucide="edit" class="w-3.5 h-3.5"></i></button>
-              <button onclick="window.deleteRadio('${r.id}')" class="btn-secondary !py-2 !px-3 text-xs hover:!bg-red-500/20 hover:text-red-400" title="Eliminar"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+              <button onclick="window.openRadioModal('${r.id}')" class="btn-secondary !py-2 !px-3 text-xs" title="Editar">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+              </button>
+              <button onclick="window.deleteRadio('${r.id}')" class="btn-secondary !py-2 !px-3 text-xs hover:!bg-red-500/20 hover:text-red-400" title="Eliminar">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+              </button>
             </div>
           </div>
         </div>`;
     }
 
-    // Delegación de eventos global (una sola vez)
+    // Delegación de eventos global
     let bound = false;
     function bindInteractiveCards() {
       if (bound) return;
@@ -1225,7 +1141,7 @@
         if (!r) return;
         if (action === 'play') playRadio(r);
         else if (action === 'fav') {
-          const icon = btn.querySelector('i');
+          const icon = btn.querySelector('svg');
           if (icon) { icon.classList.add('heart-pop'); setTimeout(() => icon.classList.remove('heart-pop'), 350); }
           await toggleFavorite(r);
         }
@@ -1234,10 +1150,7 @@
     }
     bindInteractiveCards();
 
-    window.playById = (id) => {
-      const r = state.radios.find(x => x.id === id);
-      if (r) playRadio(r);
-    };
+    window.playById = (id) => { const r = state.radios.find(x => x.id === id); if (r) playRadio(r); };
     window.deleteRadio = (id) => deleteRadio(id);
 
     // ============================================================
@@ -1313,7 +1226,6 @@
         renderGenreChips([]);
       }
       $('#radioModal').classList.remove('hidden');
-      renderIcons();
     };
 
     window.closeRadioModal = () => {
@@ -1326,10 +1238,10 @@
     $('#logoInput').addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (!file) return;
-      if (!file.type.startsWith('image/')) { showToast('Solo se permiten imágenes', 'error'); e.target.value = ''; return; }
-      if (file.size > 8 * 1024 * 1024) { showToast('Archivo muy grande (máx 8 MB)', 'error'); e.target.value = ''; return; }
+      if (!file.type.startsWith('image/')) { showToast('Solo imágenes', 'error'); e.target.value = ''; return; }
+      if (file.size > 8 * 1024 * 1024) { showToast('Máx 8 MB', 'error'); e.target.value = ''; return; }
       state.selectedLogoFile = file;
-      $('#logoStatus').textContent = `✅ ${file.name} (${(file.size/1024).toFixed(0)} KB) — se comprimirá a 200×200 al guardar`;
+      $('#logoStatus').textContent = `✅ ${file.name} (${(file.size/1024).toFixed(0)} KB)`;
       const reader = new FileReader();
       reader.onload = (ev) => {
         $('#logoPreview').className = 'logo-preview';
@@ -1357,84 +1269,66 @@
         await saveRadio(d);
         window.closeRadioModal();
         showToast('✅ Emisora guardada correctamente');
-      } catch (err) {
-        console.error('❌ Error al guardar:', err);
-        showToast('Error: ' + err.message, 'error');
-      } finally {
-        btn.disabled = false;
-        btn.textContent = original;
-      }
+      } catch (err) { showToast('Error: ' + err.message, 'error'); }
+      finally { btn.disabled = false; btn.textContent = original; }
     });
 
     // ============================================================
-    // COMPARTIR + EMBED CODE
+    // COMPARTIR + EMBED (apunta a player.html)
     // ============================================================
     window.openShare = (radio) => {
       state.shareRadio = radio;
-      const url = portalUrl(radio.id);
+
+      // URLs
+      const playerUrl = `${location.origin}/player.html?listen=${encodeURIComponent(radio.id)}&embed=1`;
+      const portalUrl = `${location.origin}/?listen=${encodeURIComponent(radio.id)}`;
       const text = `Escucha ${radio.name} en RadioWave 🎵`;
+
       $('#shareName').textContent = radio.name;
-      $('#embedCode').value = `<iframe src="${url}&embed=1" width="340" height="120" frameborder="0" style="border-radius:12px; border:1px solid #1f2937;"></iframe>`;
+
+      // Código embed (apunta a player.html independiente)
+      const embedCode = `<iframe src="${playerUrl}" width="100%" height="120" frameborder="0" allow="autoplay" style="border-radius:12px; border:1px solid #1f2937;"></iframe>`;
+      $('#embedCode').value = embedCode;
+
+      // Vista previa en tiempo real (carga player.html)
+      $('#embedPreview').innerHTML = `<iframe src="${playerUrl}" width="100%" height="120" frameborder="0" allow="autoplay" style="border-radius:8px;"></iframe>`;
+
+      // Redes sociales
       const links = {
-        whatsapp: `https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`,
-        telegram: `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`,
-        facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
-        twitter:  `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`
+        whatsapp: `https://wa.me/?text=${encodeURIComponent(text + ' ' + portalUrl)}`,
+        telegram: `https://t.me/share/url?url=${encodeURIComponent(portalUrl)}&text=${encodeURIComponent(text)}`,
+        facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(portalUrl)}`,
+        twitter:  `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(portalUrl)}`
       };
-      $$('.share-btn').forEach(b => b.onclick = () => {
-        const k = b.dataset.share;
-        if (k === 'copy') { navigator.clipboard.writeText(url); showToast('Enlace copiado'); }
-        else window.open(links[k], '_blank');
+      $$('.share-btn').forEach(b => {
+        b.onclick = () => {
+          const k = b.dataset.share;
+          if (k === 'copy') { navigator.clipboard.writeText(portalUrl); showToast('Enlace copiado'); }
+          else window.open(links[k], '_blank', 'width=600,height=500');
+        };
       });
       $('#shareModal').classList.remove('hidden');
-      renderIcons();
     };
     window.closeShare = () => $('#shareModal').classList.add('hidden');
     window.copyEmbed = () => { navigator.clipboard.writeText($('#embedCode').value); showToast('Código iFrame copiado'); };
 
     // ============================================================
-    // INIT: modo embed vs portal completo
+    // INIT
     // ============================================================
-    function initEmbed(listenId) {
-      document.body.classList.add('embed-mode');
-      $('#embedPlayer').classList.remove('hidden');
-      $('#volSlider') && ($('#eVol').value = audio.volume);
-      renderIcons();
+    console.log('🚀 RadioWave portal iniciando...');
 
+    // Si hay ?listen=ID en URL, auto-reproducir
+    const params = new URLSearchParams(location.search);
+    const listenId = params.get('listen');
+    if (listenId) {
       const check = setInterval(() => {
         const r = state.radios.find(x => x.id === listenId);
-        if (r) {
-          clearInterval(check);
-          state.currentRadio = r;
-          updatePlayerUI();
-          // Intento de autoplay (el navegador puede bloquearlo → queda el ▶)
-          audio.src = liveUrl(r.streamUrl);
-          audio.play().catch(() => setPlayIcons(false));
-          startMetadataPolling();
-        }
+        if (r) { playRadio(r); clearInterval(check); }
       }, 300);
     }
 
-    // Sincroniza sliders con volumen guardado
     $('#volSlider').value = audio.volume;
-    $('#eVol').value = audio.volume;
-
-    console.log('🚀 RadioWave iniciando...', EMBED_MODE ? '(MODO EMBED 120px)' : '(portal completo)');
-
-    if (EMBED_MODE && LISTEN_ID) {
-      initEmbed(LISTEN_ID);
-    } else {
-      renderView();
-      if (LISTEN_ID) {
-        const check = setInterval(() => {
-          const r = state.radios.find(x => x.id === LISTEN_ID);
-          if (r) { playRadio(r); clearInterval(check); }
-        }, 300);
-      }
-    }
-    renderIcons();
+    renderView();
   </script>
 </body>
 </html>
-
-
