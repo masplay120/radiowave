@@ -38,6 +38,10 @@
       min-height: 100vh;
     }
 
+    /* ===== MODO EMBED: oculta todo el portal, deja solo el mini-player ===== */
+    .embed-mode header, .embed-mode main#app, .embed-mode #audioPlayer, .embed-mode #toast { display: none !important; }
+    .embed-mode { padding-bottom: 0 !important; background: #07090c !important; }
+
     select.input {
       background-color: #0f1115; color: #e2e8f0;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
@@ -125,6 +129,13 @@
       border-radius: 8px; color: #818cf8; font-size: .85rem; cursor: pointer; transition: .15s;
     }
     .logo-upload-btn:hover { background: rgba(99,102,241,.25); }
+
+    .social-ico {
+      width: 26px; height: 26px; border-radius: 9999px;
+      background: rgba(255,255,255,.06); display: grid; place-items: center;
+      transition: .15s;
+    }
+    .social-ico:hover { background: rgba(99,102,241,.4); transform: translateY(-1px); }
   </style>
 </head>
 
@@ -161,10 +172,12 @@
 
   <main id="app" class="max-w-7xl mx-auto px-4 lg:px-8 py-8"></main>
 
-  <!-- STICKY AUDIO PLAYER -->
+  <!-- ========================================================= -->
+  <!-- REPRODUCTOR PRINCIPAL (footer del portal)                 -->
+  <!-- ========================================================= -->
   <footer id="audioPlayer" class="fixed bottom-0 inset-x-0 z-50 hidden">
     <div class="max-w-7xl mx-auto px-3 lg:px-8">
-      <div class="bg-gradient-to-r from-surface-900 via-surface-900 to-surface-950 border border-white/10 rounded-t-2xl shadow-2xl shadow-black/50 px-4 py-3 flex items-center gap-4">
+      <div class="bg-gradient-to-r from-surface-900 via-surface-900 to-surface-950 border border-white/10 rounded-t-2xl shadow-2xl shadow-black/50 px-4 py-3 flex items-center gap-3">
         <div class="shrink-0 w-14 h-14 rounded-xl bg-white/5 grid place-items-center overflow-hidden ring-1 ring-white/10">
           <img id="pLogo" src="" alt="" class="w-full h-full object-cover hidden" />
           <i data-lucide="radio" class="w-6 h-6 text-white/60" id="pIcon"></i>
@@ -179,10 +192,13 @@
           <p id="pSong" class="text-xs text-slate-300 truncate song-update">Transmisión en vivo</p>
           <p id="pGenre" class="text-xs text-slate-500 truncate">—</p>
         </div>
-        <div id="pStatus" class="hidden sm:block text-xs text-slate-400 min-w-[100px]"></div>
+        <div id="pStatus" class="hidden sm:block text-xs text-slate-400 min-w-[90px]"></div>
         <div class="flex items-center gap-2">
-          <button id="btnPlayerFav" class="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 grid place-items-center transition" title="Agregar a favoritos">
+          <button id="btnPlayerFav" class="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 grid place-items-center transition" title="Favoritos">
             <i id="btnPlayerFavIcon" data-lucide="heart" class="w-5 h-5 text-slate-300"></i>
+          </button>
+          <button id="btnShare" class="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 grid place-items-center transition" title="Compartir">
+            <i data-lucide="share-2" class="w-5 h-5"></i>
           </button>
           <button id="btnPlay" class="w-11 h-11 rounded-full bg-brand-500 hover:bg-brand-600 grid place-items-center shadow-lg shadow-brand-500/30 transition">
             <i id="btnPlayIcon" data-lucide="play" class="w-5 h-5 text-white"></i>
@@ -199,19 +215,50 @@
     </div>
   </footer>
 
+  <!-- ========================================================= -->
+  <!-- REPRODUCTOR EMBED COMPACTO (120px) — sin corazón, sin X   -->
+  <!-- ========================================================= -->
+  <div id="embedPlayer" class="hidden fixed inset-0 z-50">
+    <div class="h-full w-full flex items-center gap-3 px-3 bg-gradient-to-r from-surface-900 via-surface-950 to-surface-900 border border-white/10">
+      <!-- Logo -->
+      <div class="shrink-0 w-[76px] h-[76px] rounded-xl bg-white/5 grid place-items-center overflow-hidden ring-1 ring-white/10">
+        <img id="eLogo" src="" alt="" class="w-full h-full object-cover hidden" />
+        <i data-lucide="radio" class="w-8 h-8 text-white/50" id="eIcon"></i>
+      </div>
+
+      <!-- Info + marca de agua -->
+      <div class="min-w-0 flex-1">
+        <a id="eName" href="#" target="_blank" rel="noopener" class="block font-semibold text-sm truncate hover:text-brand-400 transition">—</a>
+        <p id="eSong" class="text-xs text-slate-300 truncate song-update">Transmisión en vivo</p>
+        <a id="eBrand" href="#" target="_blank" rel="noopener" class="inline-flex items-center gap-1 text-[10px] text-slate-500 hover:text-brand-400 transition mt-0.5">
+          <span class="live-dot" style="width:5px;height:5px;"></span> Sonando en RadioWave
+        </a>
+      </div>
+
+      <!-- Controles (solo play, mute y volumen) -->
+      <div class="flex items-center gap-2 shrink-0">
+        <button id="ePlay" class="w-11 h-11 rounded-full bg-brand-500 hover:bg-brand-600 grid place-items-center shadow-lg shadow-brand-500/30 transition">
+          <i id="ePlayIcon" data-lucide="play" class="w-5 h-5 text-white"></i>
+        </button>
+        <button id="eMute" class="w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 grid place-items-center transition">
+          <i id="eMuteIcon" data-lucide="volume-2" class="w-4 h-4"></i>
+        </button>
+        <input id="eVol" type="range" min="0" max="1" step="0.01" value="0.8" class="range-vol w-16 hidden sm:block" />
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL AUTH -->
   <div id="authModal" class="hidden fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm grid place-items-center p-4">
     <div class="modal-fade bg-surface-900 border border-white/10 rounded-2xl w-full max-w-md p-6 relative">
       <button onclick="window.closeAuth()" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 grid place-items-center">
         <i data-lucide="x" class="w-4 h-4"></i>
       </button>
-
       <div class="flex gap-1 p-1 bg-white/5 rounded-xl mb-6">
         <button data-auth-tab="login"    class="auth-tab flex-1 py-2 rounded-lg text-sm font-medium">Iniciar</button>
         <button data-auth-tab="register" class="auth-tab flex-1 py-2 rounded-lg text-sm font-medium">Registrar</button>
         <button data-auth-tab="recover"  class="auth-tab flex-1 py-2 rounded-lg text-sm font-medium">Recuperar</button>
       </div>
-
       <form id="formLogin" class="auth-form space-y-3">
         <h3 class="text-xl font-bold">Bienvenido de vuelta</h3>
         <p class="text-sm text-slate-400">Accede para sincronizar tus favoritos.</p>
@@ -219,7 +266,6 @@
         <input type="password" name="password" required placeholder="Contraseña" class="input">
         <button class="btn-primary w-full">Iniciar sesión</button>
       </form>
-
       <form id="formRegister" class="auth-form space-y-3 hidden">
         <h3 class="text-xl font-bold">Crear cuenta</h3>
         <p class="text-sm text-slate-400">Registra tu frase secreta para recuperar tu clave.</p>
@@ -234,7 +280,6 @@
         <input type="password" name="secretAnswer" required placeholder="Respuesta secreta" class="input">
         <button class="btn-primary w-full">Crear cuenta</button>
       </form>
-
       <form id="formRecover" class="auth-form space-y-3 hidden">
         <h3 class="text-xl font-bold">Restablecer contraseña</h3>
         <p class="text-sm text-slate-400">Validaremos tu frase secreta registrada.</p>
@@ -243,7 +288,6 @@
         <input type="password" name="newPassword" required minlength="6" placeholder="Nueva contraseña" class="input" id="recNewPass">
         <button class="btn-primary w-full">Cambiar contraseña</button>
       </form>
-
       <div id="authError" class="hidden mt-3 p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-300 text-sm"></div>
       <div id="authSuccess" class="hidden mt-3 p-3 rounded-lg bg-green-500/10 border border-green-500/30 text-green-300 text-sm"></div>
     </div>
@@ -261,7 +305,6 @@
           <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
-
       <div class="grid grid-cols-5 gap-3 mb-6">
         <button data-share="whatsapp" class="share-btn aspect-square rounded-xl bg-white/5 hover:bg-green-500/20 grid place-items-center"><i data-lucide="message-circle" class="w-5 h-5 text-green-400"></i></button>
         <button data-share="telegram" class="share-btn aspect-square rounded-xl bg-white/5 hover:bg-sky-500/20 grid place-items-center"><i data-lucide="send" class="w-5 h-5 text-sky-400"></i></button>
@@ -269,16 +312,15 @@
         <button data-share="twitter"  class="share-btn aspect-square rounded-xl bg-white/5 hover:bg-slate-300/20 grid place-items-center"><i data-lucide="twitter" class="w-5 h-5 text-slate-200"></i></button>
         <button data-share="copy"     class="share-btn aspect-square rounded-xl bg-white/5 hover:bg-brand-500/20 grid place-items-center"><i data-lucide="link" class="w-5 h-5 text-brand-400"></i></button>
       </div>
-
       <div class="border-t border-white/5 pt-4">
-        <h4 class="text-sm font-semibold mb-2 flex items-center gap-2"><i data-lucide="code" class="w-4 h-4"></i> Insertar como widget (iFrame)</h4>
+        <h4 class="text-sm font-semibold mb-2 flex items-center gap-2"><i data-lucide="code" class="w-4 h-4"></i> Insertar como widget (iFrame 120px)</h4>
         <textarea id="embedCode" readonly class="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-xs font-mono text-slate-300 h-24 resize-none"></textarea>
         <button onclick="window.copyEmbed()" class="mt-2 text-xs text-brand-400 hover:text-brand-300">Copiar código</button>
       </div>
     </div>
   </div>
 
-  <!-- MODAL RADIO (sin campo banner, logo por archivo) -->
+  <!-- MODAL RADIO -->
   <div id="radioModal" class="hidden fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm grid place-items-center p-4 overflow-y-auto">
     <div class="modal-fade bg-surface-900 border border-white/10 rounded-2xl w-full max-w-2xl p-6 my-8">
       <div class="flex items-start justify-between mb-4">
@@ -305,7 +347,7 @@
               <label for="logoInput" class="logo-upload-btn inline-block cursor-pointer">
                 <i data-lucide="upload" class="w-4 h-4 inline-block mr-2"></i>Elegir imagen
               </label>
-              <p class="text-xs text-slate-500 mt-2">Se comprime a 300×300.</p>
+              <p class="text-xs text-slate-500 mt-2">Se comprime a 200×200 (calidad 0.5) y se guarda en Firestore — plan gratis.</p>
               <p id="logoStatus" class="text-xs text-slate-400 mt-1"></p>
             </div>
           </div>
@@ -320,9 +362,9 @@
         <div><label>País *</label><input name="country" required class="input"></div>
         <div><label>Ciudad</label><input name="city" class="input"></div>
         <div><label>Web</label><input name="webUrl" placeholder="https://..." class="input"></div>
-        <div><label>Facebook</label><input name="facebook" class="input"></div>
-        <div><label>Instagram</label><input name="instagram" class="input"></div>
-        <div class="md:col-span-2"><label>Twitter / X</label><input name="twitter" class="input"></div>
+        <div><label>Facebook</label><input name="facebook" placeholder="https://facebook.com/..." class="input"></div>
+        <div><label>Instagram</label><input name="instagram" placeholder="https://instagram.com/..." class="input"></div>
+        <div class="md:col-span-2"><label>Twitter / X</label><input name="twitter" placeholder="https://x.com/..." class="input"></div>
 
         <div class="md:col-span-2 flex gap-2 pt-2">
           <button type="button" onclick="window.closeRadioModal()" class="btn-secondary flex-1">Cancelar</button>
@@ -335,12 +377,10 @@
   <div id="toast" class="fixed top-20 right-4 z-[70] hidden"></div>
 
   <script type="module">
-    // ⚠️ SIN firebase-storage: todo funciona con el plan gratuito Spark
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import {
       getAuth, onAuthStateChanged, signInWithEmailAndPassword,
-      createUserWithEmailAndPassword, signOut,
-      sendPasswordResetEmail
+      createUserWithEmailAndPassword, signOut, sendPasswordResetEmail
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     import {
       getFirestore, collection, doc, setDoc, updateDoc, deleteDoc,
@@ -361,7 +401,6 @@
     const auth = getAuth(app);
     const db   = getFirestore(app);
 
-    // BANNER FIJO OBLIGATORIO para todas las radios
     const DEFAULT_BANNER_URL = "https://image.jimcdn.com/app/cms/image/transf/dimension=2301x/path/sc40a039d49acf98a/backgroundarea/i2f02cd984ea6c9de/version/1625686183/image.jpg";
 
     const GENRES = [
@@ -371,19 +410,27 @@
       'R&B','Folk','Latina','K-Pop','Infantil','Cultura','Variada'
     ];
 
+    // Detección temprana de modo embed
+    const urlParams = new URLSearchParams(location.search);
+    const EMBED_MODE = urlParams.get('embed') === '1';
+    const LISTEN_ID  = urlParams.get('listen');
+
     const state = {
       user: null, userData: null,
       radios: [], myRadios: [], favorites: [],
       currentRadio: null, currentView: 'home',
       currentGenre: null, searchQuery: '', shareRadio: null,
       selectedGenres: [], metadataInterval: null, lastSong: null,
-      selectedLogoFile: null
+      selectedLogoFile: null, embedMode: EMBED_MODE
     };
 
     const $  = (sel, root = document) => root.querySelector(sel);
     const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
     const appEl = $('#app');
 
+    // ============================================================
+    // HELPERS
+    // ============================================================
     function showToast(msg, type = 'success') {
       const t = $('#toast');
       t.className = `fixed top-20 right-4 z-[70] px-4 py-3 rounded-xl shadow-lg text-sm font-medium modal-fade ${
@@ -402,18 +449,45 @@
 
     function renderIcons() { if (window.lucide) lucide.createIcons(); }
 
+    // Búsqueda sin tildes ni mayúsculas (NFD + strip diacríticos)
+    const norm = (s = '') => String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
     function normalizeGenres(g) {
       if (!g) return [];
       if (Array.isArray(g)) return g;
       if (typeof g === 'string') return g.split(',').map(s => s.trim()).filter(Boolean);
       return [];
     }
-    function formatGenres(g) {
-      const arr = normalizeGenres(g);
-      return arr.length ? arr.join(' · ') : '';
+    function formatGenres(g) { return normalizeGenres(g).join(' · '); }
+    function isFavorite(radioId) { return state.favorites.some(f => f.radioId === radioId || f.id === radioId); }
+
+    function fixUrl(u) {
+      if (!u) return '';
+      return /^https?:\/\//i.test(u) ? u : 'https://' + u;
     }
-    function isFavorite(radioId) {
-      return state.favorites.some(f => f.radioId === radioId || f.id === radioId);
+
+    // Íconos de redes sociales CONDICIONALES (solo si existe la URL)
+    function socialLinks(r) {
+      const items = [];
+      if (r.webUrl)    items.push(['globe',    r.webUrl,    'Sitio web']);
+      if (r.facebook)  items.push(['facebook', r.facebook, 'Facebook']);
+      if (r.instagram) items.push(['instagram',r.instagram,'Instagram']);
+      if (r.twitter)   items.push(['twitter',  r.twitter,  'X / Twitter']);
+      if (!items.length) return '';
+      return `<div class="flex gap-1.5 mt-2">${items.map(([ic, url, title]) =>
+        `<a href="${escapeHtml(fixUrl(url))}" target="_blank" rel="noopener" title="${title}" class="social-ico">
+           <i data-lucide="${ic}" class="w-3 h-3 text-slate-300"></i>
+         </a>`).join('')}</div>`;
+    }
+
+    // PURGA DE BÚFER: fuerza borde en vivo agregando timestamp
+    function liveUrl(url) {
+      const sep = url.includes('?') ? '&' : '?';
+      return `${url}${sep}t=${Date.now()}`;
+    }
+
+    function portalUrl(radioId) {
+      return `${location.origin}${location.pathname}?listen=${radioId}`;
     }
 
     // ============================================================
@@ -425,7 +499,6 @@
         try {
           const snap = await getDoc(doc(db, 'users', user.uid));
           state.userData = snap.exists() ? snap.data() : null;
-          console.log('✅ Usuario cargado:', state.userData);
           listenFavorites();
           listenMyRadios();
         } catch (err) {
@@ -433,13 +506,9 @@
           showToast('Error al cargar datos: ' + err.message, 'error');
         }
       } else {
-        state.userData = null;
-        state.favorites = [];
-        state.myRadios = [];
+        state.userData = null; state.favorites = []; state.myRadios = [];
       }
-      renderAuthArea();
-      renderView();
-      updatePlayerFavButton();
+      if (!state.embedMode) { renderAuthArea(); renderView(); updatePlayerFavButton(); }
     });
 
     function renderAuthArea() {
@@ -544,11 +613,10 @@
     onSnapshot(query(collection(db, 'radios'), orderBy('createdAt', 'desc')), (snap) => {
       state.radios = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       console.log('📻 Radios cargadas:', state.radios.length);
-      renderView();
-      updatePlayerFavButton();
+      if (!state.embedMode) { renderView(); updatePlayerFavButton(); }
     }, (err) => {
       console.error('❌ Error radios:', err);
-      showToast('Error al cargar emisoras: ' + err.message, 'error');
+      if (!state.embedMode) showToast('Error al cargar emisoras: ' + err.message, 'error');
     });
 
     function listenMyRadios() {
@@ -558,8 +626,7 @@
         query(collection(db, 'radios'), where('ownerId', '==', state.user.uid)),
         (snap) => {
           state.myRadios = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-          console.log('📻 Mis radios:', state.myRadios.length);
-          if (state.currentView === 'dashboard') renderView();
+          if (state.currentView === 'dashboard' && !state.embedMode) renderView();
         },
         (err) => { console.error('❌ Error mis radios:', err); showToast('Error: ' + err.message, 'error'); }
       );
@@ -572,9 +639,7 @@
         collection(db, 'users', state.user.uid, 'favorites'),
         (snap) => {
           state.favorites = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-          console.log('❤️ Favoritos:', state.favorites.length);
-          renderView();
-          updatePlayerFavButton();
+          if (!state.embedMode) { renderView(); updatePlayerFavButton(); }
         },
         (err) => { console.error('❌ Error favoritos:', err); showToast('Error: ' + err.message, 'error'); }
       );
@@ -588,7 +653,6 @@
         const snap = await getDoc(ref);
         if (snap.exists()) {
           await deleteDoc(ref);
-          console.log('🤍 Removido de favoritos:', radio.name);
           showToast('Quitado de favoritos', 'info');
         } else {
           await setDoc(ref, {
@@ -598,7 +662,6 @@
             streamUrl: radio.streamUrl,
             savedAt: serverTimestamp()
           });
-          console.log('❤️ Añadido a favoritos:', radio.name);
           showToast('Añadido a favoritos ❤️');
         }
       } catch (err) {
@@ -608,7 +671,7 @@
     }
 
     // ============================================================
-    // COMPRESIÓN DE IMAGEN → Base64 (SIN Storage, plan gratis)
+    // COMPRESIÓN DE LOGO — 200x200 máx, calidad 0.5 (Firestore ligero)
     // ============================================================
     function fileToImage(file) {
       return new Promise((resolve, reject) => {
@@ -634,44 +697,35 @@
       return canvas;
     }
 
-    // Compresión ADAPTATIVA: prueba niveles hasta quedar liviano
     async function compressToDataURL(file) {
       const img = await fileToImage(file);
-      const levels = [
-        { size: 300, q: 0.70 },
-        { size: 260, q: 0.60 },
-        { size: 220, q: 0.50 },
-        { size: 180, q: 0.45 }
-      ];
+      // Estricto: máximo 200x200, calidad 0.5 (con fallbacks menores si aún pesa)
+      const levels = [ { size: 200, q: 0.5 }, { size: 160, q: 0.45 }, { size: 140, q: 0.4 } ];
       let last = null;
       for (const lv of levels) {
         const canvas = drawScaled(img, lv.size);
         let dataUrl = canvas.toDataURL('image/webp', lv.q);
-        // Safari no soporta WebP en toDataURL → cae a JPEG
         if (!dataUrl.startsWith('data:image/webp')) dataUrl = canvas.toDataURL('image/jpeg', lv.q);
         last = dataUrl;
         const kb = dataUrl.length / 1024;
-        console.log(`🗜️ Prueba ${lv.size}px q${lv.q} → ${kb.toFixed(1)} KB`);
-        if (kb <= 300) return dataUrl; // objetivo: <300 KB
+        console.log(`🗜️ Logo ${lv.size}px q${lv.q} → ${kb.toFixed(1)} KB`);
+        if (kb <= 150) return dataUrl;
       }
       if (last.length / 1024 > 900) throw new Error('Imagen demasiado pesada incluso comprimida');
       return last;
     }
 
     // ============================================================
-    // GUARDAR RADIO (logo Base64 + banner fijo)
+    // GUARDAR / ELIMINAR RADIO
     // ============================================================
     async function saveRadio(data) {
       if (!auth.currentUser) throw new Error('Debes iniciar sesión');
-
       const radioId = data.id || doc(collection(db, 'radios')).id;
       let logoUrl = data.existingLogoUrl || '';
-
       if (state.selectedLogoFile) {
         logoUrl = await compressToDataURL(state.selectedLogoFile);
-        console.log('📦 Logo final:', (logoUrl.length / 1024).toFixed(1), 'KB (Base64 en Firestore)');
+        console.log('📦 Logo final:', (logoUrl.length / 1024).toFixed(1), 'KB');
       }
-
       const payload = {
         name: data.name,
         streamUrl: data.streamUrl,
@@ -680,33 +734,28 @@
         genre: data.genre,
         country: data.country,
         city: data.city || '',
-        webUrl: data.webUrl || '',
-        facebook: data.facebook || '',
-        instagram: data.instagram || '',
-        twitter: data.twitter || '',
+        webUrl: fixUrl(data.webUrl || ''),
+        facebook: fixUrl(data.facebook || ''),
+        instagram: fixUrl(data.instagram || ''),
+        twitter: fixUrl(data.twitter || ''),
         ownerId: auth.currentUser.uid,
         ownerName: state.userData?.name || '',
         updatedAt: serverTimestamp()
       };
-
       if (data.id) {
-        console.log('✏️ Actualizando radio:', data.id);
         await updateDoc(doc(db, 'radios', data.id), payload);
+        console.log('✏️ Radio actualizada:', data.id);
       } else {
         payload.createdAt = serverTimestamp();
-        console.log('➕ Creando radio:', radioId);
         await setDoc(doc(db, 'radios', radioId), payload);
+        console.log('➕ Radio creada:', radioId);
       }
-      console.log('✅ Radio guardada correctamente');
     }
 
-    // ELIMINAR RADIO (el logo va dentro del doc → se borra solo)
     async function deleteRadio(id) {
       if (!confirm('¿Estás seguro de eliminar esta radio? Esta acción no se puede deshacer.')) return;
       try {
-        console.log('🗑️ Eliminando radio:', id);
         await deleteDoc(doc(db, 'radios', id));
-        console.log('✅ Radio eliminada');
         showToast('Emisora eliminada correctamente');
       } catch (err) {
         console.error('❌ Error al eliminar:', err);
@@ -715,7 +764,7 @@
     }
 
     // ============================================================
-    // METADATA SERVICE (Icecast / Shoutcast)
+    // METADATA SERVICE
     // ============================================================
     const MetadataService = {
       getBaseUrl(streamUrl) {
@@ -738,7 +787,7 @@
             if (!res.ok) continue;
             const parsed = this.parse(await res.json());
             if (parsed) return parsed;
-          } catch (e) { /* siguiente endpoint */ }
+          } catch (e) { /* siguiente */ }
         }
         return null;
       },
@@ -760,58 +809,52 @@
     };
 
     // ============================================================
-    // PLAYER
+    // AUDIO (compartido por player principal y embed)
     // ============================================================
     const audio = new Audio();
     audio.preload = 'none';
+
+    // PERSISTENCIA DE VOLUMEN (localStorage — solo preferencia de UI)
+    const savedVol = localStorage.getItem('rw_volume');
+    audio.volume = savedVol !== null ? parseFloat(savedVol) : 0.8;
+
     let reconnectTimer = null;
 
-    function playRadio(radio) {
-      if (!radio) return;
-      if (state.currentRadio?.id === radio.id && !audio.paused) { audio.pause(); return; }
-      state.currentRadio = radio;
-      audio.src = radio.streamUrl;
-      audio.play().catch(err => { console.error('Play error:', err); setStatus('Error al reproducir'); });
-      $('#audioPlayer').classList.remove('hidden');
-      updatePlayerUI();
-      startMetadataPolling();
+    function syncVolume(v) {
+      audio.volume = v;
+      localStorage.setItem('rw_volume', String(v));
+      $('#volSlider').value = v;
+      $('#eVol').value = v;
     }
 
-    function updatePlayerUI() {
-      const r = state.currentRadio;
-      if (!r) return;
-      $('#pName').textContent = r.name || 'Radio';
-      $('#pGenre').textContent = [formatGenres(r.genre), r.city, r.country].filter(Boolean).join(' · ');
-      const logo = $('#pLogo');
-      if (r.logoUrl) { logo.src = r.logoUrl; logo.classList.remove('hidden'); $('#pIcon').classList.add('hidden'); }
-      else { logo.classList.add('hidden'); $('#pIcon').classList.remove('hidden'); }
-      $('#pLive').classList.remove('hidden');
-      $('#pLive').classList.add('flex');
-      updateSongDisplay('Transmisión en vivo');
-      updatePlayerFavButton();
+    function setPlayIcons(playing) {
+      $('#btnPlayIcon').setAttribute('data-lucide', playing ? 'pause' : 'play');
+      $('#ePlayIcon').setAttribute('data-lucide', playing ? 'pause' : 'play');
       renderIcons();
     }
 
-    function updatePlayerFavButton() {
-      const icon = $('#btnPlayerFavIcon');
-      if (!icon || !state.currentRadio) return;
-      const fav = isFavorite(state.currentRadio.id);
-      icon.classList.toggle('fill-red-500', fav);
-      icon.classList.toggle('text-red-500', fav);
-      icon.classList.toggle('text-slate-300', !fav);
+    function setMuteIcons() {
+      const ic = audio.muted ? 'volume-x' : 'volume-2';
+      $('#btnMuteIcon').setAttribute('data-lucide', ic);
+      $('#eMuteIcon').setAttribute('data-lucide', ic);
       renderIcons();
     }
 
+    function setStatus(msg) { $('#pStatus').textContent = msg; }
+
+    // Actualiza canción en AMBOS players
     function updateSongDisplay(text) {
-      const el = $('#pSong');
-      if (!el) return;
       const clean = (text || 'Transmisión en vivo').trim();
       if (clean === state.lastSong) return;
       state.lastSong = clean;
-      el.classList.remove('song-update');
-      void el.offsetWidth;
-      el.textContent = clean;
-      el.classList.add('song-update');
+      ['#pSong', '#eSong'].forEach(sel => {
+        const el = $(sel);
+        if (!el) return;
+        el.classList.remove('song-update');
+        void el.offsetWidth;
+        el.textContent = clean;
+        el.classList.add('song-update');
+      });
     }
 
     function startMetadataPolling() {
@@ -830,31 +873,78 @@
     function stopMetadataPolling() {
       if (state.metadataInterval) { clearInterval(state.metadataInterval); state.metadataInterval = null; }
     }
-    function setStatus(msg) { $('#pStatus').textContent = msg; }
+
+    // REPRODUCIR con PURGA DE BÚFER
+    function playRadio(radio) {
+      if (!radio) return;
+      if (state.currentRadio?.id === radio.id && !audio.paused) { audio.pause(); return; }
+      state.currentRadio = radio;
+      audio.src = liveUrl(radio.streamUrl); // ← purga: siempre borde en vivo
+      audio.play().catch(err => { console.warn('Autoplay bloqueado o error:', err.message); setStatus('Pulsa ▶ para escuchar'); });
+      if (!state.embedMode) $('#audioPlayer').classList.remove('hidden');
+      updatePlayerUI();
+      startMetadataPolling();
+    }
+
+    // Reanudar TAMBIÉN purga el búfer
+    function resumeLive() {
+      if (!state.currentRadio) return;
+      audio.src = liveUrl(state.currentRadio.streamUrl);
+      audio.play().catch(() => setStatus('Error al reproducir'));
+    }
+
+    function updatePlayerUI() {
+      const r = state.currentRadio;
+      if (!r) return;
+      // Player principal
+      $('#pName').textContent = r.name || 'Radio';
+      $('#pGenre').textContent = [formatGenres(r.genre), r.city, r.country].filter(Boolean).join(' · ');
+      const logo = $('#pLogo');
+      if (r.logoUrl) { logo.src = r.logoUrl; logo.classList.remove('hidden'); $('#pIcon').classList.add('hidden'); }
+      else { logo.classList.add('hidden'); $('#pIcon').classList.remove('hidden'); }
+      $('#pLive').classList.remove('hidden'); $('#pLive').classList.add('flex');
+      // Player embed
+      $('#eName').textContent = r.name || 'Radio';
+      $('#eName').href = portalUrl(r.id);
+      $('#eBrand').href = portalUrl(r.id);
+      const eLogo = $('#eLogo');
+      if (r.logoUrl) { eLogo.src = r.logoUrl; eLogo.classList.remove('hidden'); $('#eIcon').classList.add('hidden'); }
+      else { eLogo.classList.add('hidden'); $('#eIcon').classList.remove('hidden'); }
+
+      updateSongDisplay('Transmisión en vivo');
+      updatePlayerFavButton();
+      renderIcons();
+    }
+
+    function updatePlayerFavButton() {
+      const icon = $('#btnPlayerFavIcon');
+      if (!icon || !state.currentRadio) return;
+      const fav = isFavorite(state.currentRadio.id);
+      icon.classList.toggle('fill-red-500', fav);
+      icon.classList.toggle('text-red-500', fav);
+      icon.classList.toggle('text-slate-300', !fav);
+      renderIcons();
+    }
 
     audio.addEventListener('playing', () => {
       clearTimeout(reconnectTimer);
       setStatus('Transmitiendo');
-      $('#btnPlayIcon').setAttribute('data-lucide', 'pause');
-      renderIcons();
+      setPlayIcons(true);
       startMetadataPolling();
     });
-    audio.addEventListener('pause', () => {
-      $('#btnPlayIcon').setAttribute('data-lucide', 'play');
-      renderIcons();
-      stopMetadataPolling();
-    });
+    audio.addEventListener('pause', () => { setPlayIcons(false); stopMetadataPolling(); });
     audio.addEventListener('waiting', () => setStatus('Cargando...'));
     audio.addEventListener('error', () => {
       setStatus('Reconectando...');
       clearTimeout(reconnectTimer);
-      reconnectTimer = setTimeout(() => { if (audio.src) audio.load(); }, 5000);
+      reconnectTimer = setTimeout(() => { if (audio.src && state.currentRadio) audio.load(); }, 5000);
     });
     audio.addEventListener('stalled', () => setStatus('Reconectando...'));
 
+    // ---- Controles player principal ----
     $('#btnPlay').addEventListener('click', () => {
       if (!state.currentRadio) { if (state.radios.length) playRadio(state.radios[0]); return; }
-      audio.paused ? audio.play() : audio.pause();
+      audio.paused ? resumeLive() : audio.pause();
     });
     $('#btnPlayerFav').addEventListener('click', async () => {
       if (!state.currentRadio) { showToast('No hay radio reproduciéndose', 'info'); return; }
@@ -863,18 +953,25 @@
       setTimeout(() => icon.classList.remove('heart-pop'), 350);
       await toggleFavorite(state.currentRadio);
     });
-    $('#btnMute').addEventListener('click', () => {
-      audio.muted = !audio.muted;
-      $('#btnMuteIcon').setAttribute('data-lucide', audio.muted ? 'volume-x' : 'volume-2');
-      renderIcons();
+    $('#btnShare').addEventListener('click', () => {
+      if (state.currentRadio) window.openShare(state.currentRadio);
     });
-    $('#volSlider').addEventListener('input', (e) => { audio.volume = +e.target.value; });
+    $('#btnMute').addEventListener('click', () => { audio.muted = !audio.muted; setMuteIcons(); });
+    $('#volSlider').addEventListener('input', (e) => syncVolume(+e.target.value));
     $('#btnClose').addEventListener('click', () => {
       audio.pause(); audio.src = '';
       state.currentRadio = null;
       stopMetadataPolling();
       $('#audioPlayer').classList.add('hidden');
     });
+
+    // ---- Controles player embed ----
+    $('#ePlay').addEventListener('click', () => {
+      if (!state.currentRadio) return;
+      audio.paused ? resumeLive() : audio.pause();
+    });
+    $('#eMute').addEventListener('click', () => { audio.muted = !audio.muted; setMuteIcons(); });
+    $('#eVol').addEventListener('input', (e) => syncVolume(+e.target.value));
 
     // ============================================================
     // SPA ROUTER + VISTAS
@@ -887,13 +984,13 @@
     }));
 
     function renderView() {
+      if (state.embedMode) return; // en embed NO se renderiza el portal
       $$('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.nav === state.currentView));
       const v = state.currentView;
       if (v === 'home')      renderHome();
       if (v === 'explore')   renderExplore();
       if (v === 'favorites') renderFavorites();
       if (v === 'dashboard') renderDashboard();
-      bindInteractiveCards();
       renderIcons();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -943,7 +1040,6 @@
       $$('.genre-btn').forEach(b => b.addEventListener('click', () => {
         state.currentGenre = b.dataset.genre || null;
         renderHome();
-        bindInteractiveCards();
         renderIcons();
       }));
     }
@@ -953,7 +1049,7 @@
         <h2 class="text-3xl font-bold mb-6">Explorar</h2>
         <div class="relative mb-6">
           <i data-lucide="search" class="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"></i>
-          <input id="searchInput" type="search" placeholder="Busca por nombre, género, país..."
+          <input id="searchInput" type="search" placeholder="Busca por nombre, género, país o ciudad (ignora tildes)..."
                  class="input !pl-12 !py-3 !text-base" value="${escapeHtml(state.searchQuery)}">
         </div>
         <div id="searchResults" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -963,19 +1059,19 @@
       $('#searchInput').addEventListener('input', (e) => {
         state.searchQuery = e.target.value;
         $('#searchResults').innerHTML = filteredRadios().map(radioCard).join('') || '<div class="col-span-full text-center text-slate-400 py-12">Sin resultados</div>';
-        bindInteractiveCards();
         renderIcons();
       });
     }
 
+    // BÚSQUEDA DINÁMICA sin mayúsculas ni tildes
     function filteredRadios() {
-      const q = state.searchQuery.toLowerCase().trim();
+      const q = norm(state.searchQuery.trim());
       if (!q) return state.radios;
       return state.radios.filter(r =>
-        (r.name || '').toLowerCase().includes(q) ||
-        normalizeGenres(r.genre).some(g => g.toLowerCase().includes(q)) ||
-        (r.country || '').toLowerCase().includes(q) ||
-        (r.city || '').toLowerCase().includes(q)
+        norm(r.name).includes(q) ||
+        normalizeGenres(r.genre).some(g => norm(g).includes(q)) ||
+        norm(r.country).includes(q) ||
+        norm(r.city).includes(q)
       );
     }
 
@@ -1046,7 +1142,7 @@
     };
 
     // ============================================================
-    // TARJETAS
+    // TARJETAS (con redes sociales condicionales)
     // ============================================================
     function radioCard(r) {
       const fav = isFavorite(r.id);
@@ -1087,7 +1183,8 @@
               </button>
             </div>
             <p class="text-xs text-slate-400 truncate">${escapeHtml(genreText)}</p>
-            <p class="text-xs text-slate-500 truncate">${escapeHtml(r.country || '')}</p>
+            <p class="text-xs text-slate-500 truncate">${escapeHtml([r.city, r.country].filter(Boolean).join(', '))}</p>
+            ${socialLinks(r)}
           </div>
         </div>`;
     }
@@ -1102,8 +1199,9 @@
           </div>
           <div class="p-4">
             <h3 class="font-semibold mb-1">${escapeHtml(r.name)}</h3>
-            <p class="text-xs text-slate-400 mb-3 truncate">${escapeHtml(genres.join(' · '))}</p>
-            <div class="flex gap-2">
+            <p class="text-xs text-slate-400 mb-1 truncate">${escapeHtml(genres.join(' · '))}</p>
+            ${socialLinks(r)}
+            <div class="flex gap-2 mt-3">
               <button onclick="window.playById('${r.id}')" class="btn-secondary flex-1 !py-2 text-xs">▶ Reproducir</button>
               <button onclick="window.openRadioModal('${r.id}')" class="btn-secondary !py-2 !px-3 text-xs" title="Editar"><i data-lucide="edit" class="w-3.5 h-3.5"></i></button>
               <button onclick="window.deleteRadio('${r.id}')" class="btn-secondary !py-2 !px-3 text-xs hover:!bg-red-500/20 hover:text-red-400" title="Eliminar"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
@@ -1112,7 +1210,7 @@
         </div>`;
     }
 
-    // Delegación de eventos (corazones, play, compartir)
+    // Delegación de eventos global (una sola vez)
     let bound = false;
     function bindInteractiveCards() {
       if (bound) return;
@@ -1123,10 +1221,8 @@
         e.stopPropagation();
         e.preventDefault();
         const { action, id } = btn.dataset;
-        console.log(`🎯 Acción: ${action} → ${id}`);
         const r = state.radios.find(x => x.id === id);
-        if (!r) { console.error('Radio no encontrada:', id); return; }
-
+        if (!r) return;
         if (action === 'play') playRadio(r);
         else if (action === 'fav') {
           const icon = btn.querySelector('i');
@@ -1136,6 +1232,7 @@
         else if (action === 'share') window.openShare(r);
       });
     }
+    bindInteractiveCards();
 
     window.playById = (id) => {
       const r = state.radios.find(x => x.id === id);
@@ -1171,14 +1268,13 @@
     function updateGenreCount() {
       const count = state.selectedGenres.length;
       const el = $('#genreCount');
-      if (count === 0)      { el.textContent = 'Selecciona al menos 3 géneros'; el.className = 'text-xs text-slate-400 mt-1'; }
-      else if (count < 3)   { el.textContent = `${count} de 3 seleccionados`; el.className = 'text-xs text-amber-400 mt-1'; }
-      else                  { el.textContent = `✓ ${count} géneros seleccionados`; el.className = 'text-xs text-green-400 mt-1'; }
+      if (count === 0)    { el.textContent = 'Selecciona al menos 3 géneros'; el.className = 'text-xs text-slate-400 mt-1'; }
+      else if (count < 3) { el.textContent = `${count} de 3 seleccionados`; el.className = 'text-xs text-amber-400 mt-1'; }
+      else                { el.textContent = `✓ ${count} géneros seleccionados`; el.className = 'text-xs text-green-400 mt-1'; }
       $('#genreError').classList.add('hidden');
     }
 
     window.openRadioModal = (id = null) => {
-      console.log('📝 Abriendo modal radio, id:', id || 'nueva');
       if (!state.user) { showToast('Debes iniciar sesión', 'error'); window.openAuth('login'); return; }
       if (state.userData?.role !== 'broadcaster') { showToast('Debes tener rol de Emisora', 'error'); return; }
 
@@ -1233,7 +1329,7 @@
       if (!file.type.startsWith('image/')) { showToast('Solo se permiten imágenes', 'error'); e.target.value = ''; return; }
       if (file.size > 8 * 1024 * 1024) { showToast('Archivo muy grande (máx 8 MB)', 'error'); e.target.value = ''; return; }
       state.selectedLogoFile = file;
-      $('#logoStatus').textContent = `✅ ${file.name} (${(file.size/1024).toFixed(0)} KB) — se comprimirá al guardar`;
+      $('#logoStatus').textContent = `✅ ${file.name} (${(file.size/1024).toFixed(0)} KB) — se comprimirá a 200×200 al guardar`;
       const reader = new FileReader();
       reader.onload = (ev) => {
         $('#logoPreview').className = 'logo-preview';
@@ -1250,7 +1346,6 @@
         showToast('Selecciona al menos 3 géneros', 'error');
         return;
       }
-
       const d = Object.fromEntries(new FormData(e.target));
       d.genre = [...state.selectedGenres];
 
@@ -1258,7 +1353,6 @@
       const original = btn.textContent;
       btn.disabled = true;
       btn.textContent = 'Guardando...';
-
       try {
         await saveRadio(d);
         window.closeRadioModal();
@@ -1273,11 +1367,11 @@
     });
 
     // ============================================================
-    // COMPARTIR
+    // COMPARTIR + EMBED CODE
     // ============================================================
     window.openShare = (radio) => {
       state.shareRadio = radio;
-      const url = `${location.origin}${location.pathname}?listen=${radio.id}`;
+      const url = portalUrl(radio.id);
       const text = `Escucha ${radio.name} en RadioWave 🎵`;
       $('#shareName').textContent = radio.name;
       $('#embedCode').value = `<iframe src="${url}&embed=1" width="340" height="120" frameborder="0" style="border-radius:12px; border:1px solid #1f2937;"></iframe>`;
@@ -1299,31 +1393,45 @@
     window.copyEmbed = () => { navigator.clipboard.writeText($('#embedCode').value); showToast('Código iFrame copiado'); };
 
     // ============================================================
-    // URL PARAMS + INIT
+    // INIT: modo embed vs portal completo
     // ============================================================
-    function handleUrlParams() {
-      const params = new URLSearchParams(location.search);
-      const listenId = params.get('listen');
-      const embed = params.get('embed');
-      if (listenId) {
+    function initEmbed(listenId) {
+      document.body.classList.add('embed-mode');
+      $('#embedPlayer').classList.remove('hidden');
+      $('#volSlider') && ($('#eVol').value = audio.volume);
+      renderIcons();
+
+      const check = setInterval(() => {
+        const r = state.radios.find(x => x.id === listenId);
+        if (r) {
+          clearInterval(check);
+          state.currentRadio = r;
+          updatePlayerUI();
+          // Intento de autoplay (el navegador puede bloquearlo → queda el ▶)
+          audio.src = liveUrl(r.streamUrl);
+          audio.play().catch(() => setPlayIcons(false));
+          startMetadataPolling();
+        }
+      }, 300);
+    }
+
+    // Sincroniza sliders con volumen guardado
+    $('#volSlider').value = audio.volume;
+    $('#eVol').value = audio.volume;
+
+    console.log('🚀 RadioWave iniciando...', EMBED_MODE ? '(MODO EMBED 120px)' : '(portal completo)');
+
+    if (EMBED_MODE && LISTEN_ID) {
+      initEmbed(LISTEN_ID);
+    } else {
+      renderView();
+      if (LISTEN_ID) {
         const check = setInterval(() => {
-          const r = state.radios.find(x => x.id === listenId);
-          if (r) {
-            playRadio(r);
-            clearInterval(check);
-            if (embed === '1') {
-              document.body.style.background = '#07090c';
-              appEl.innerHTML = '';
-              document.querySelector('header').style.display = 'none';
-            }
-          }
+          const r = state.radios.find(x => x.id === LISTEN_ID);
+          if (r) { playRadio(r); clearInterval(check); }
         }, 300);
       }
     }
-
-    console.log('🚀 RadioWave iniciando (modo gratuito, sin Storage)...');
-    renderView();
-    handleUrlParams();
     renderIcons();
   </script>
 </body>
